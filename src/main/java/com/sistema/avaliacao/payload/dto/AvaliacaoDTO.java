@@ -21,5 +21,6 @@ public abstract class AvaliacaoDTO {
     private AlunoDTO aluno;
     private String comentario;
     private LocalDate data;
+    public abstract double getMediaNotas();
 
 }

@@ -1,18 +1,19 @@
 package com.sistema.avaliacao.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Professor {
 
     @Id
@@ -20,7 +21,10 @@ public class Professor {
     private String nome;
     private String email;
     private String departamento;
+
     @OneToMany(mappedBy = "professor")
     private List <Disciplina> disciplinas;
 
+    @OneToMany(mappedBy = "professor", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List  <AvaliacaoProfessor> avaliacoesProfessor;
 }

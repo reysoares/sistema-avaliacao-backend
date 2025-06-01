@@ -18,6 +18,6 @@ public class AlunoDTO {
     private String senha;
     private String email;
     private String curso;
-    private List<AvaliacaoDTO> avaliacoes;
+    private List <AvaliacaoDTO> avaliacoesAluno;
 
 }

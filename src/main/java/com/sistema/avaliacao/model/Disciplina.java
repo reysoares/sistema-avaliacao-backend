@@ -1,27 +1,30 @@
 package com.sistema.avaliacao.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Disciplina {
 
     @Id
     private String codigo;
+
     private String nome;
     private String curso;
     private String semestre;
+    private int cargaHoraria;
+
     @ManyToOne
     @JoinColumn(name = "professor_disciplina")
     private Professor professor;
-    private int cargaHoraria;
 
+    @OneToMany(mappedBy = "disciplina", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List <AvaliacaoDisciplina> avaliacoesDisciplina;
 }
