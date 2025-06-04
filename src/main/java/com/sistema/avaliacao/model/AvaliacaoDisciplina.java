@@ -1,9 +1,7 @@
 package com.sistema.avaliacao.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Transient;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -11,10 +9,12 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@PrimaryKeyJoinColumn(name = "id")
 public class AvaliacaoDisciplina extends Avaliacao {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "disciplina_avaliacao")
+    @JsonIgnore
     private Disciplina disciplina;
 
     private int notaConteudo;

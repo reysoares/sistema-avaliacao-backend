@@ -1,4 +1,4 @@
-package com.sistema.avaliacao.service;
+package com.sistema.avaliacao.service.aluno;
 
 import com.sistema.avaliacao.exceptions.APIException;
 import com.sistema.avaliacao.exceptions.ResourceNotFoundException;
@@ -54,22 +54,14 @@ public class AlunoServiceImplement implements AlunoService {
     @Override
     public AlunoDTO creatAluno(AlunoDTO alunoDTO) {
         Aluno aluno = modelMapper.map(alunoDTO, Aluno.class);
-        Aluno alunoFromDB = alunoRepository.findByEmail(aluno.getEmail());
+        Aluno alunoFromDB = alunoRepository.findById(aluno.getMatriculaAcademica())
+                .orElse(null);
+
         if (alunoFromDB != null)
-            throw new APIException("E-mail informado já está vinculado a uma conta! Por favor utilize outro email.");
+            throw new APIException("Aluno já cadastrado.");
 
         Aluno savedAluno = alunoRepository.save(aluno);
         return modelMapper.map(savedAluno, AlunoDTO.class);
-    }
-
-    @Override
-    public AlunoDTO deleteAluno(String matriculaAcademica) {
-        Aluno aluno = alunoRepository.findById(matriculaAcademica)
-                .orElseThrow(() -> new ResourceNotFoundException("Aluno", "matriculaAcademica", matriculaAcademica));
-
-        AlunoDTO alunoDTO = modelMapper.map(aluno, AlunoDTO.class);
-        alunoRepository.delete(aluno);
-        return alunoDTO;
     }
 
     @Override
@@ -81,5 +73,15 @@ public class AlunoServiceImplement implements AlunoService {
         aluno.setMatriculaAcademica(matriculaAcademica);
         savedAluno = alunoRepository.save(aluno);
         return modelMapper.map(savedAluno, AlunoDTO.class);
+    }
+
+    @Override
+    public AlunoDTO deleteAluno(String matriculaAcademica) {
+        Aluno aluno = alunoRepository.findById(matriculaAcademica)
+                .orElseThrow(() -> new ResourceNotFoundException("Aluno", "matriculaAcademica", matriculaAcademica));
+
+        AlunoDTO alunoDTO = modelMapper.map(aluno, AlunoDTO.class);
+        alunoRepository.delete(aluno);
+        return alunoDTO;
     }
 }

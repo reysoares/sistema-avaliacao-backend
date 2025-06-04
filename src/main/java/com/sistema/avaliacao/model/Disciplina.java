@@ -1,9 +1,8 @@
 package com.sistema.avaliacao.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -14,6 +13,7 @@ import java.util.List;
 public class Disciplina {
 
     @Id
+    @EqualsAndHashCode.Include
     private String codigo;
 
     private String nome;
@@ -21,10 +21,8 @@ public class Disciplina {
     private String semestre;
     private int cargaHoraria;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "professor_disciplina")
+    @JsonIgnore
     private Professor professor;
-
-    @OneToMany(mappedBy = "disciplina", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List <AvaliacaoDisciplina> avaliacoesDisciplina;
 }

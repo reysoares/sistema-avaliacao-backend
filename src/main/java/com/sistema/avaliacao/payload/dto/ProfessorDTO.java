@@ -1,7 +1,5 @@
 package com.sistema.avaliacao.payload.dto;
 
-import com.sistema.avaliacao.model.AvaliacaoProfessor;
-import com.sistema.avaliacao.model.Disciplina;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +17,4 @@ public class ProfessorDTO {
     private String nome;
     private String email;
     private String departamento;
-    private List <DisciplinaDTO> disciplinas;
-    private List <AvaliacaoProfessorDTO> avaliacoesProfessor;
 }

@@ -1,5 +1,6 @@
 package com.sistema.avaliacao.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,8 +20,9 @@ public abstract class Avaliacao {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "aluno_avaliacao")
+    @JsonIgnore
     private Aluno aluno;
 
     private String comentario;

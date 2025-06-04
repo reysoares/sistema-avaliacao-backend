@@ -1,9 +1,9 @@
-package com.sistema.avaliacao.controller;
+package com.sistema.avaliacao.controller.aluno;
 
 import com.sistema.avaliacao.config.AppConstants;
-import com.sistema.avaliacao.payload.dto.AlunoDTO;
+import com.sistema.avaliacao.payload.dto.*;
 import com.sistema.avaliacao.payload.response.AlunoResponse;
-import com.sistema.avaliacao.service.AlunoService;
+import com.sistema.avaliacao.service.aluno.AlunoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,15 +33,15 @@ public class AlunoController {
         return new ResponseEntity<>(savedAlunoDTO, HttpStatus.CREATED);
     }
 
+    @PutMapping("/public/aluno/{matriculaAcademica}")
+    public ResponseEntity <AlunoDTO> updateAluno(@Valid @RequestBody AlunoDTO alunoDTO, @PathVariable String matriculaAcademica) {
+        AlunoDTO updatedAlunoDTO = alunoService.updateAluno(alunoDTO, matriculaAcademica);
+        return new ResponseEntity<>(updatedAlunoDTO, HttpStatus.OK);
+    }
+
     @DeleteMapping("/admin/aluno/{matriculaAcademica}")
     public ResponseEntity <AlunoDTO> deleteAluno(@PathVariable String matriculaAcademica) {
         AlunoDTO alunoDeletedDTO = alunoService.deleteAluno(matriculaAcademica);
         return new ResponseEntity<>(alunoDeletedDTO, HttpStatus.OK);
-    }
-
-    @PutMapping("/public/aluno/{matriculaAcademica}")
-    public ResponseEntity <AlunoDTO> updateAluno(@Valid @RequestBody AlunoDTO alunoDTO, @PathVariable String matriculaAcademica) {
-        AlunoDTO alunoCategoryDTO = alunoService.updateAluno(alunoDTO, matriculaAcademica);
-        return new ResponseEntity<>(alunoCategoryDTO, HttpStatus.OK);
     }
 }
