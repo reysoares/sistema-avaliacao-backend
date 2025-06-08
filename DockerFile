@@ -1,12 +1,10 @@
 # Dockerfile
 
-FROM eclipse-temurin:21-jdk-alpine
+FROM maven:3.9-eclipse-temurin-21
 
 WORKDIR /app
+COPY . /app
 
-# Copia o JAR gerado pelo Maven (você precisa compilar antes com mvn package)
-COPY target/avaliacao-0.0.1-SNAPSHOT.jar /app/avaliacao.jar
+EXPOSE 8080
 
-EXPOSE 8083
-
-CMD ["java", "-jar", "/app/avaliacao.jar"]
+CMD ["mvn", "spring-boot:run"]

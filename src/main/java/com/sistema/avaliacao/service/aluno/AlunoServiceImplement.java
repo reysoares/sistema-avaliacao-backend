@@ -8,6 +8,7 @@ import com.sistema.avaliacao.payload.response.AlunoResponse;
 import com.sistema.avaliacao.repositories.AlunoRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AlunoServiceImplement implements AlunoService {
@@ -66,14 +68,29 @@ public class AlunoServiceImplement implements AlunoService {
 
     @Override
     public AlunoDTO updateAluno(AlunoDTO alunoDTO, String matriculaAcademica) {
-        Aluno aluno = modelMapper.map(alunoDTO, Aluno.class);
-        Aluno savedAluno = alunoRepository.findById(matriculaAcademica)
+        // Busca o aluno existente
+        Aluno alunoExistente = alunoRepository.findById(matriculaAcademica)
                 .orElseThrow(() -> new ResourceNotFoundException("Aluno", "matriculaAcademica", matriculaAcademica));
 
-        aluno.setMatriculaAcademica(matriculaAcademica);
-        savedAluno = alunoRepository.save(aluno);
-        return modelMapper.map(savedAluno, AlunoDTO.class);
+        String novoEmail = alunoDTO.getEmail();
+
+        if (novoEmail != null && !novoEmail.isBlank() && !novoEmail.equals(alunoExistente.getEmail())) {
+            // Verifica se já existe outro aluno com esse e-mail
+            Optional<Aluno> alunoComMesmoEmail = alunoRepository.findByEmail(novoEmail);
+
+            if (alunoComMesmoEmail.isPresent() &&
+                    !alunoComMesmoEmail.get().getMatriculaAcademica().equals(matriculaAcademica)) {
+                throw new DataIntegrityViolationException("Já existe outro aluno cadastrado com este e-mail.");
+            }
+
+            // Atualiza o e-mail
+            alunoExistente.setEmail(novoEmail);
+        }
+
+        Aluno alunoAtualizado = alunoRepository.save(alunoExistente);
+        return modelMapper.map(alunoAtualizado, AlunoDTO.class);
     }
+
 
     @Override
     public AlunoDTO deleteAluno(String matriculaAcademica) {

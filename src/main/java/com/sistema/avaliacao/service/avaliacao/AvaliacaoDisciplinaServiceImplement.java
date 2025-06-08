@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class AvaliacaoDisciplinaServiceImpl implements AvaliacaoDisciplinaService {
+public class AvaliacaoDisciplinaServiceImplement implements AvaliacaoDisciplinaService {
 
     @Autowired
     private AvaliacaoDisciplinaRepository avaliacaoDisciplinaRepository;
@@ -108,18 +108,30 @@ public class AvaliacaoDisciplinaServiceImpl implements AvaliacaoDisciplinaServic
 
     @Override
     public AvaliacaoDisciplinaDTO updateAvaliacaoDisciplina(AvaliacaoDisciplinaDTO avaliacaoDisciplinaDTO, String matriculaAcademica, Long id) {
-        AvaliacaoDisciplina avaliacaoDisciplina = modelMapper.map(avaliacaoDisciplinaDTO, AvaliacaoDisciplina.class);
-        AvaliacaoDisciplina avaliacaoSaved = avaliacaoDisciplinaRepository.findById(id)
+        // Busca a avaliação existente
+        AvaliacaoDisciplina avaliacaoExistente = avaliacaoDisciplinaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Avaliação", "id", id));
 
-        if (!avaliacaoSaved.getAluno().getMatriculaAcademica().equals(matriculaAcademica)) {
+        // Verifica se o aluno tem permissão para atualizar
+        if (!avaliacaoExistente.getAluno().getMatriculaAcademica().equals(matriculaAcademica)) {
             throw new APIException("Você não tem permissão para atualizar esta avaliação.");
         }
 
-        avaliacaoDisciplina.setId(id);
-        avaliacaoSaved = avaliacaoDisciplinaRepository.save(avaliacaoDisciplina);
-        return modelMapper.map(avaliacaoSaved, AvaliacaoDisciplinaDTO.class);
+        // Atualiza os campos permitidos
+        avaliacaoExistente.setNotaConteudo(avaliacaoDisciplinaDTO.getNotaConteudo());
+        avaliacaoExistente.setNotaCargaTrabalho(avaliacaoDisciplinaDTO.getNotaCargaTrabalho());
+        avaliacaoExistente.setNotaInfraestrutura(avaliacaoDisciplinaDTO.getNotaInfraestrutura());
+
+        // Atualiza o comentário, se existir (herdado de AvaliacaoDTO)
+        if (avaliacaoDisciplinaDTO.getComentario() != null) {
+            avaliacaoExistente.setComentario(avaliacaoDisciplinaDTO.getComentario());
+        }
+
+        // Salva e retorna a avaliação atualizada
+        AvaliacaoDisciplina atualizada = avaliacaoDisciplinaRepository.save(avaliacaoExistente);
+        return modelMapper.map(atualizada, AvaliacaoDisciplinaDTO.class);
     }
+
 
     @Override
     public AvaliacaoDisciplinaDTO deleteAvaliacaoDisciplina(String matriculaAcademica, Long id) {
