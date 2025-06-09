@@ -24,7 +24,7 @@ import java.util.List;
 
 
 @Service
-public class AvaliacaoProfessorServiceImpl implements AvaliacaoProfessorService {
+public class AvaliacaoProfessorServiceImplement implements AvaliacaoProfessorService {
 
     @Autowired
     private AvaliacaoProfessorRepository avaliacaoProfessorRepository;
@@ -114,17 +114,30 @@ public class AvaliacaoProfessorServiceImpl implements AvaliacaoProfessorService 
 
     @Override
     public AvaliacaoProfessorDTO updateAvaliacaoProfessor(AvaliacaoProfessorDTO avaliacaoProfessorDTO, String matriculaAcademica, Long id) {
-        AvaliacaoProfessor avaliacaoProfessor = modelMapper.map(avaliacaoProfessorDTO, AvaliacaoProfessor.class);
-        AvaliacaoProfessor avaliacaoSaved = avaliacaoProfessorRepository.findById(id)
+        // Busca a avaliação existente
+        AvaliacaoProfessor avaliacaoExistente = avaliacaoProfessorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Avaliação", "id", id));
 
-        if (!avaliacaoSaved.getAluno().getMatriculaAcademica().equals(matriculaAcademica)) {
+        // Verifica permissão do aluno
+        if (!avaliacaoExistente.getAluno().getMatriculaAcademica().equals(matriculaAcademica)) {
             throw new APIException("Você não tem permissão para atualizar esta avaliação.");
         }
 
-        avaliacaoProfessor.setId(id);
-        avaliacaoSaved = avaliacaoProfessorRepository.save(avaliacaoProfessor);
-        return modelMapper.map(avaliacaoSaved, AvaliacaoProfessorDTO.class);
+        // Atualiza as notas
+        avaliacaoExistente.setNotaDidatica(avaliacaoProfessorDTO.getNotaDidatica());
+        avaliacaoExistente.setNotaDominioConteudo(avaliacaoProfessorDTO.getNotaDominioConteudo());
+        avaliacaoExistente.setNotaInteracaoAlunos(avaliacaoProfessorDTO.getNotaInteracaoAlunos());
+
+        // Atualiza comentário, se existir
+        if (avaliacaoProfessorDTO.getComentario() != null) {
+            avaliacaoExistente.setComentario(avaliacaoProfessorDTO.getComentario());
+        }
+
+        // Salva a avaliação atualizada
+        AvaliacaoProfessor atualizada = avaliacaoProfessorRepository.save(avaliacaoExistente);
+
+        // Retorna o DTO atualizado
+        return modelMapper.map(atualizada, AvaliacaoProfessorDTO.class);
     }
 
     @Override

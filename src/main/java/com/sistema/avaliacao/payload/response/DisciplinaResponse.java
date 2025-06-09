@@ -14,7 +14,7 @@ public class DisciplinaResponse implements PaginatedResponse<DisciplinaDTO> {
     private List<DisciplinaDTO> content;
     private Integer pageNumber;
     private Integer pageSize;
-    private long totalElements;
+    private Long totalElements;
     private Integer totalPages;
     private boolean lastPage;
 
