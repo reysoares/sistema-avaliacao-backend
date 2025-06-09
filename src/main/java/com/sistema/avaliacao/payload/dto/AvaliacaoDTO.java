@@ -1,6 +1,5 @@
 package com.sistema.avaliacao.payload.dto;
 
-import com.sistema.avaliacao.model.Aluno;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;

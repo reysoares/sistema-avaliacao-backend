@@ -5,5 +5,6 @@ public class AppConstants {
     public static final String PAGE_SIZE = "20";
     public static final String SORT_ALUNOS_BY = "matriculaAcademica";
     public static final String SORT_DISCIPLINAS_BY = "nome";
+    public static final String SORT_PROFESSORES_BY = "matriculaFuncional";
     public static final String SORT_DIR = "asc";
 }

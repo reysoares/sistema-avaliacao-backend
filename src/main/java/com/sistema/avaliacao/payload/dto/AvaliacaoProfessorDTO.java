@@ -1,6 +1,5 @@
 package com.sistema.avaliacao.payload.dto;
 
-import com.sistema.avaliacao.model.Professor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
