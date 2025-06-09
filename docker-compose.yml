@@ -1,8 +1,11 @@
 # docker-compose.yml
+version: '3.8'
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     depends_on:
@@ -13,8 +16,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: docker
     volumes:
       - .:/app
-      - ~/.m2:/root/.m2  # evita rebaixar dependências Maven
-    command: ./mvnw spring-boot:run  # OU: mvn spring-boot:run, se não usa ./mvnw
+      - ~/.m2:/root/.m2
+    command: mvn spring-boot:run
 
   postgres:
     image: bitnami/postgresql:latest

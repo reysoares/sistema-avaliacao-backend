@@ -33,7 +33,7 @@ public class AvaliacaoDisciplinaServiceImplement implements AvaliacaoDisciplinaS
     @Autowired
     private ModelMapper modelMapper;
 
-    private AvaliacaoDisciplinaResponse buildAvaliacaoProfessorResponse(Page<AvaliacaoDisciplina> page) {
+    private AvaliacaoDisciplinaResponse buildAvaliacaoDisciplinaResponse(Page<AvaliacaoDisciplina> page) {
         List<AvaliacaoDisciplinaDTO> dtos = page.getContent().stream()
                 .map(av -> modelMapper.map(av, AvaliacaoDisciplinaDTO.class))
                 .toList();
@@ -60,22 +60,22 @@ public class AvaliacaoDisciplinaServiceImplement implements AvaliacaoDisciplinaS
         if(avaliacoesDisciplina.isEmpty())
             throw new APIException("Nenhuma avaliação feita até agora.");
 
-        return buildAvaliacaoProfessorResponse(avaliacaoDisciplinaPage);
+        return buildAvaliacaoDisciplinaResponse(avaliacaoDisciplinaPage);
     }
 
     @Override
-    public AvaliacaoDisciplinaResponse getProfessorAvaliacoes(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, DisciplinaDTO disciplinaDTO) {
+    public AvaliacaoDisciplinaResponse getDisciplinaAvaliacoes(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, DisciplinaDTO disciplinaDTO) {
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
         Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
         Page<AvaliacaoDisciplina> avaliacaoDisciplinaPage = avaliacaoDisciplinaRepository.findByDisciplinaCodigo(disciplinaDTO.getCodigo(), pageDetails);
-        List<AvaliacaoDisciplina> avaliacoesProfessor = avaliacaoDisciplinaPage.getContent();
-        if(avaliacoesProfessor.isEmpty())
+        List<AvaliacaoDisciplina> avaliacoesDisciplina = avaliacaoDisciplinaPage.getContent();
+        if(avaliacoesDisciplina.isEmpty())
             throw new APIException("Nenhuma avaliação recebida até agora.");
 
-        return buildAvaliacaoProfessorResponse(avaliacaoDisciplinaPage);
+        return buildAvaliacaoDisciplinaResponse(avaliacaoDisciplinaPage);
     }
 
     @Override

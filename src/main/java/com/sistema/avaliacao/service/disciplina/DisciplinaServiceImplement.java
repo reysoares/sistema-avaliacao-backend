@@ -4,6 +4,7 @@ import com.sistema.avaliacao.exceptions.APIException;
 import com.sistema.avaliacao.exceptions.ResourceNotFoundException;
 import com.sistema.avaliacao.model.Disciplina;
 import com.sistema.avaliacao.payload.dto.DisciplinaDTO;
+import com.sistema.avaliacao.payload.dto.ProfessorDTO;
 import com.sistema.avaliacao.payload.response.DisciplinaResponse;
 import com.sistema.avaliacao.repositories.DisciplinaRepository;
 import org.modelmapper.ModelMapper;
@@ -25,6 +26,21 @@ public class DisciplinaServiceImplement implements DisciplinaService {
     @Autowired
     private ModelMapper modelMapper;
 
+    private DisciplinaResponse buildDisciplinaResponse(Page<Disciplina> page) {
+        List<DisciplinaDTO> dtos = page.getContent().stream()
+                .map(av -> modelMapper.map(av, DisciplinaDTO.class))
+                .toList();
+
+        DisciplinaResponse response = new DisciplinaResponse();
+        response.setContent(dtos);
+        response.setPageNumber(page.getNumber());
+        response.setPageSize(page.getSize());
+        response.setTotalElements(page.getTotalElements());
+        response.setTotalPages(page.getTotalPages());
+        response.setLastPage(page.isLast());
+        return response;
+    }
+
     @Override
     public DisciplinaResponse getAllDisciplinas(Integer pageNumber, Integer pageSize, String sortBy, String order) {
         // Configura a ordenação
@@ -44,21 +60,25 @@ public class DisciplinaServiceImplement implements DisciplinaService {
             throw new APIException("Nenhuma disciplina encontrada.");
         }
 
-        // Converte para DTO
-        List<DisciplinaDTO> disciplinaDTOs = disciplinas.stream()
-                .map(disciplina -> modelMapper.map(disciplina, DisciplinaDTO.class))
-                .toList();
+        return buildDisciplinaResponse(disciplinasPage);
+    }
 
-        // Monta a resposta paginada
-        DisciplinaResponse response = new DisciplinaResponse();
-        response.setContent(disciplinaDTOs);
-        response.setPageNumber(disciplinasPage.getNumber());
-        response.setPageSize(disciplinasPage.getSize());
-        response.setTotalElements(disciplinasPage.getTotalElements());
-        response.setTotalPages(disciplinasPage.getTotalPages());
-        response.setLastPage(disciplinasPage.isLast());
+    @Override
+    public DisciplinaResponse getProfessorDisciplinas (Integer pageNumber, Integer pageSize, String sortBy, String order, ProfessorDTO professorDTO) {
+        Sort sort = order.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
-        return response;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+        Page<Disciplina> disciplinasPage = disciplinaRepository.findByProfessorMatriculaFuncional(professorDTO.getMatriculaFuncional(), pageable);
+        List<Disciplina> disciplinas = disciplinasPage.getContent();
+
+        if (disciplinas.isEmpty()) {
+            throw new APIException("Nenhuma disciplina encontrada.");
+        }
+
+        return buildDisciplinaResponse(disciplinasPage);
     }
 
     @Override
