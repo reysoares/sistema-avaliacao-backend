@@ -1,5 +1,9 @@
 package com.sistema.avaliacao.controller.professor;
 
+import com.sistema.avaliacao.payload.response.AvaliacaoProfessorResponse;
+import com.sistema.avaliacao.payload.response.DisciplinaResponse;
+import com.sistema.avaliacao.service.avaliacao.AvaliacaoProfessorService;
+import com.sistema.avaliacao.service.disciplina.DisciplinaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +30,12 @@ public class ProfessorController {
     @Autowired
     private ProfessorService professorService;
 
+    @Autowired
+    private DisciplinaService disciplinaService;
+
+    @Autowired
+    private AvaliacaoProfessorService avaliacaoProfessorService;
+
     @GetMapping("/public/professor")
     public ResponseEntity <ProfessorResponse> getAllProfessor(
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
@@ -34,6 +44,32 @@ public class ProfessorController {
             @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
         ProfessorResponse professorResponse = professorService.getAllProfessor(pageNumber, pageSize, sortBy, sortOrder);
         return new ResponseEntity<>(professorResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/public/professor/disciplinas/{matriculaFuncional}")
+    public ResponseEntity <DisciplinaResponse> getAllDisciplinas(
+            @PathVariable String matriculaFuncional,
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PROFESSORES_BY, required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
+        ProfessorDTO professorDTO = new ProfessorDTO();
+        professorDTO.setMatriculaFuncional(matriculaFuncional);
+        DisciplinaResponse disciplinaResponse = disciplinaService.getProfessorDisciplinas(pageNumber, pageSize, sortBy, sortOrder, professorDTO);
+        return new ResponseEntity<>(disciplinaResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/public/professor/disciplinas/{matriculaFuncional}")
+    public ResponseEntity <AvaliacaoProfessorResponse> getAllAvaliacoes(
+            @PathVariable String matriculaFuncional,
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PROFESSORES_BY, required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
+        ProfessorDTO professorDTO = new ProfessorDTO();
+        professorDTO.setMatriculaFuncional(matriculaFuncional);
+        AvaliacaoProfessorResponse avaliacaoProfessorResponse = avaliacaoProfessorService.getProfessorAvaliacoes(pageNumber, pageSize, sortBy, sortOrder, professorDTO);
+        return new ResponseEntity<>(avaliacaoProfessorResponse, HttpStatus.OK);
     }
 
     @PostMapping("/public/professor")
