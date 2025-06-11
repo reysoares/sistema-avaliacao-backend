@@ -59,7 +59,7 @@ public class ProfessorController {
         return new ResponseEntity<>(disciplinaResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/public/professor/disciplinas/{matriculaFuncional}")
+    @GetMapping("/public/professor/avaliacoes/{matriculaFuncional}")
     public ResponseEntity <AvaliacaoProfessorResponse> getAllAvaliacoes(
             @PathVariable String matriculaFuncional,
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,

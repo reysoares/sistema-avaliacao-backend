@@ -3,10 +3,12 @@ package com.sistema.avaliacao.service.disciplina;
 import com.sistema.avaliacao.exceptions.APIException;
 import com.sistema.avaliacao.exceptions.ResourceNotFoundException;
 import com.sistema.avaliacao.model.Disciplina;
+import com.sistema.avaliacao.model.Professor;
 import com.sistema.avaliacao.payload.dto.DisciplinaDTO;
 import com.sistema.avaliacao.payload.dto.ProfessorDTO;
 import com.sistema.avaliacao.payload.response.DisciplinaResponse;
 import com.sistema.avaliacao.repositories.DisciplinaRepository;
+import com.sistema.avaliacao.repositories.ProfessorRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,9 @@ public class DisciplinaServiceImplement implements DisciplinaService {
 
     @Autowired
     private DisciplinaRepository disciplinaRepository;
+
+    @Autowired
+    private ProfessorRepository professorRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -90,6 +95,14 @@ public class DisciplinaServiceImplement implements DisciplinaService {
 
         // Converte DTO para entidade
         Disciplina disciplina = modelMapper.map(disciplinaDTO, Disciplina.class);
+
+        // Busca professor no banco pela matrícula para associar a entidade gerenciada
+        String matricula = disciplinaDTO.getProfessor().getMatriculaFuncional();
+        Professor professor = professorRepository.findById(matricula)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor", "matrícula", matricula));
+
+        // Associa o professor carregado à disciplina
+        disciplina.setProfessor(professor);
 
         // Salva no banco
         Disciplina savedDisciplina = disciplinaRepository.save(disciplina);

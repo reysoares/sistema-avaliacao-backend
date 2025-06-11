@@ -15,7 +15,9 @@ import com.sistema.avaliacao.model.Professor;
 import com.sistema.avaliacao.payload.dto.ProfessorDTO;
 import com.sistema.avaliacao.payload.response.ProfessorResponse;
 import com.sistema.avaliacao.repositories.ProfessorRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ProfessorServiceImpl  implements ProfessorService{
 
     @Autowired
