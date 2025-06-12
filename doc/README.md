@@ -1,4 +1,4 @@
-# Documentação do Projeto - 1° Etapa
+# Documentação do Projeto - 1° Release do Projeto
 
 Este diretório contém os materiais de apoio e documentação relacionados ao projeto, incluindo:
 
