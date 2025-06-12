@@ -1,9 +1,10 @@
 📫 Acesso aos Endpoints via Postman
-Para facilitar os testes e a exploração da API, disponibilizei um link público da collection do Postman com todos os endpoints do projeto. Nele, você encontrará os métodos disponíveis (GET, POST, PUT, DELETE, etc.), os parâmetros necessários e exemplos de requisições.
+Para testar e explorar os endpoints da API, você pode acessar a collection completa pelo Postman. Basta aceitar o convite para o time e ter acesso direto aos métodos implementados (GET, POST, PUT, DELETE, etc.).
 
-🔗 Link da collection no Postman: https://app.getpostman.com/join-team?invite_code=7f86232689aa3a9db80e392a3116ecb6db4293e224cb22a232f728bd1bbebf9a&target_code=647386416349233476a37a7c3fd4fbcc 
+🔗 Acesse através do convite:
+https://app.getpostman.com/join-team?invite_code=7f86232689aa3a9db80e392a3116ecb6db4293e224cb22a232f728bd1bbebf9a&target_code=647386416349233476a37a7c3fd4fbcc
 
-Observação: Certifique-se de que o backend esteja rodando localmente ou no servidor configurado corretamente para que as requisições funcionem como esperado.
+Observação: É necessário ter uma conta no Postman para acessar o time e visualizar a collection. Certifique-se de que a API esteja ativa no ambiente especificado.
 
 
 
