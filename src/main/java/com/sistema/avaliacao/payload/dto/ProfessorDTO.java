@@ -1,9 +1,10 @@
 package com.sistema.avaliacao.payload.dto;
 
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 
 @Data
@@ -11,9 +12,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProfessorDTO {
 
-    @Id
     private String matriculaFuncional;
     private String nome;
-    private String email;
+    private String emailInstitucional;
     private String departamento;
+    private String unidadeEnsino;
+    private String areaAtuacao;
+    private LocalDate dataNascimento;
+    private String imagem;
+    private String perfilDescricao;
+
 }

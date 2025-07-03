@@ -10,4 +10,6 @@ public interface DisciplinaRepository extends JpaRepository <Disciplina, String>
 
     Page<Disciplina> findByProfessorMatriculaFuncional(String matriculaFuncional, Pageable pageable);
 
+    Page<Disciplina> findByNomeStartingWithIgnoreCase(String keyword, Pageable pageable);
+
 }

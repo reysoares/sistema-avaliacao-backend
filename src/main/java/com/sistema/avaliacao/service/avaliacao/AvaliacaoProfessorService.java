@@ -9,7 +9,7 @@ public interface AvaliacaoProfessorService {
 
     AvaliacaoProfessorResponse getAlunoAvaliacoes(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, AlunoDTO alunoDTO);
     AvaliacaoProfessorResponse getProfessorAvaliacoes(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, ProfessorDTO professorDTO);
-    AvaliacaoProfessorDTO creatAvaliacaoProfessor(AvaliacaoProfessorDTO avaliacaoDTO);
+    AvaliacaoProfessorDTO createAvaliacaoProfessor(AvaliacaoProfessorDTO avaliacaoDTO);
     AvaliacaoProfessorDTO updateAvaliacaoProfessor(AvaliacaoProfessorDTO avaliacaoDTO, String matriculaAcademica, Long id);
     AvaliacaoProfessorDTO deleteAvaliacaoProfessor(String matriculaAcademica, Long id);
 }

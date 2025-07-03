@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
@@ -17,7 +20,7 @@ public class AlunoController {
     @Autowired
     private AlunoService alunoService;
 
-    @GetMapping("/public/aluno")
+    @GetMapping("/public/alunos")
     public ResponseEntity <AlunoResponse> getAllAlunos(
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
@@ -27,16 +30,39 @@ public class AlunoController {
         return new ResponseEntity<>(alunoResponse, HttpStatus.OK);
     }
 
+    @GetMapping("/public/alunos/keyword/{keyword}")
+    public ResponseEntity <AlunoResponse> getAlunosByKeyword(
+            @PathVariable String keyword,
+            @RequestParam (name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam (name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam (name = "sortBy", defaultValue = AppConstants.SORT_ALUNOS_BY, required = false) String sortBy,
+            @RequestParam (name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
+        AlunoResponse alunoResponse = alunoService.searchAlunoByKeyword(keyword, pageNumber, pageSize, sortBy, sortOrder);
+        return new ResponseEntity<>(alunoResponse, HttpStatus.FOUND);
+    }
+
     @PostMapping("/public/aluno")
-    public ResponseEntity <AlunoDTO> creatAluno(@Valid @RequestBody AlunoDTO alunoDTO) {
-        AlunoDTO savedAlunoDTO = alunoService.creatAluno(alunoDTO);
+    public ResponseEntity <AlunoDTO> createAluno(@Valid @RequestBody AlunoDTO alunoDTO) {
+        AlunoDTO savedAlunoDTO = alunoService.createAluno(alunoDTO);
         return new ResponseEntity<>(savedAlunoDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/public/aluno/{matriculaAcademica}")
     public ResponseEntity <AlunoDTO> updateAluno(@Valid @RequestBody AlunoDTO alunoDTO, @PathVariable String matriculaAcademica) {
-        AlunoDTO updatedAlunoDTO = alunoService.updateAluno(alunoDTO, matriculaAcademica);
-        return new ResponseEntity<>(updatedAlunoDTO, HttpStatus.OK);
+        AlunoDTO updateAlunoDTO = alunoService.atualizarAlunoViaSuap(alunoDTO, matriculaAcademica);
+        return new ResponseEntity<>(updateAlunoDTO, HttpStatus.OK);
+    }
+
+    @PutMapping("/public/aluno/{matriculaAcademica}/imagem")
+    public ResponseEntity <AlunoDTO> updateAlunoImagem(@PathVariable String matriculaAcademica, @RequestParam("imagem") MultipartFile imagem) throws IOException {
+        AlunoDTO updateAlunoDTO = alunoService.updateAlunoImagem(matriculaAcademica, imagem);
+        return new ResponseEntity<>(updateAlunoDTO, HttpStatus.OK);
+    }
+
+    @PutMapping("/public/aluno/{matriculaAcademica}/descricao")
+    public ResponseEntity<AlunoDTO> updateAlunoDescricao(@PathVariable String matriculaAcademica, @RequestBody AlunoDTO alunoDTO) {
+        AlunoDTO updateAlunoDTO = alunoService.updatePerfilDescricao(matriculaAcademica, alunoDTO);
+        return new ResponseEntity<>(updateAlunoDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/admin/aluno/{matriculaAcademica}")

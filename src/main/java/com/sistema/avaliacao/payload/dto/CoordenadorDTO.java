@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CoordenadorDTO {
 
-    @Id
     private String matriculaFuncionalCoordenador;
     private String nome;
     private String senha;
+
 }

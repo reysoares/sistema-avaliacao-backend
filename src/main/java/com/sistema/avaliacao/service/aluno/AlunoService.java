@@ -2,11 +2,24 @@ package com.sistema.avaliacao.service.aluno;
 
 import com.sistema.avaliacao.payload.dto.AlunoDTO;
 import com.sistema.avaliacao.payload.response.AlunoResponse;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface AlunoService {
 
     AlunoResponse getAllAlunos(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
-    AlunoDTO creatAluno(AlunoDTO alunoDTO);
-    AlunoDTO updateAluno(AlunoDTO alunoDTO, String matriculaAcademica);
+
+    AlunoResponse searchAlunoByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
+
+    AlunoDTO createAluno(AlunoDTO alunoDTO);
+
+    AlunoDTO atualizarAlunoViaSuap(AlunoDTO alunoDTO, String matriculaAcademica);
+
     AlunoDTO deleteAluno (String matriculaAcademica);
+
+    AlunoDTO updateAlunoImagem (String matriculaAcademica, MultipartFile imagem) throws IOException;
+
+    AlunoDTO updatePerfilDescricao(String matriculaAcademica, AlunoDTO alunoDTO);
+
 }

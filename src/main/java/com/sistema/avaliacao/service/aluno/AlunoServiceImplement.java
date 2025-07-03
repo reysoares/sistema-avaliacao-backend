@@ -6,17 +6,19 @@ import com.sistema.avaliacao.model.Aluno;
 import com.sistema.avaliacao.payload.dto.AlunoDTO;
 import com.sistema.avaliacao.payload.response.AlunoResponse;
 import com.sistema.avaliacao.repositories.AlunoRepository;
+import com.sistema.avaliacao.service.file.FileService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AlunoServiceImplement implements AlunoService {
@@ -26,6 +28,12 @@ public class AlunoServiceImplement implements AlunoService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private FileService fileService;
+
+    @Value("${project.image}")
+    private String path;
 
     @Override
     public AlunoResponse getAllAlunos(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
@@ -54,7 +62,35 @@ public class AlunoServiceImplement implements AlunoService {
     }
 
     @Override
-    public AlunoDTO creatAluno(AlunoDTO alunoDTO) {
+    public AlunoResponse searchAlunoByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sort = Sort.by("nome").ascending();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+        Page<Aluno> pageAlunos = alunoRepository.findByNomeStartingWithIgnoreCase(keyword, pageable);
+
+        List<Aluno> alunos = pageAlunos.getContent();
+
+        if (alunos.isEmpty()) {
+            throw new APIException("Nenhum aluno encontrado com: " + keyword);
+        }
+
+        List<AlunoDTO> alunoDTOS = alunos.stream()
+                .map(aluno -> modelMapper.map(aluno, AlunoDTO.class))
+                .toList();
+
+        AlunoResponse alunoResponse = new AlunoResponse();
+        alunoResponse.setContent(alunoDTOS);
+        alunoResponse.setPageNumber(pageAlunos.getNumber());
+        alunoResponse.setPageSize(pageAlunos.getSize());
+        alunoResponse.setTotalElements(pageAlunos.getTotalElements());
+        alunoResponse.setTotalPages(pageAlunos.getTotalPages());
+        alunoResponse.setLastPage(pageAlunos.isLast());
+
+        return alunoResponse;
+    }
+
+    @Override
+    public AlunoDTO createAluno(AlunoDTO alunoDTO) {
         Aluno aluno = modelMapper.map(alunoDTO, Aluno.class);
         Aluno alunoFromDB = alunoRepository.findById(aluno.getMatriculaAcademica())
                 .orElse(null);
@@ -67,30 +103,41 @@ public class AlunoServiceImplement implements AlunoService {
     }
 
     @Override
-    public AlunoDTO updateAluno(AlunoDTO alunoDTO, String matriculaAcademica) {
-        // Busca o aluno existente
-        Aluno alunoExistente = alunoRepository.findById(matriculaAcademica)
+    public AlunoDTO atualizarAlunoViaSuap(AlunoDTO alunoDTO, String matriculaAcademica) {
+        Aluno aluno = alunoRepository.findById(matriculaAcademica)
                 .orElseThrow(() -> new ResourceNotFoundException("Aluno", "matriculaAcademica", matriculaAcademica));
 
-        String novoEmail = alunoDTO.getEmail();
+        aluno.setNome(alunoDTO.getNome());
+        aluno.setEmailInstitucional(alunoDTO.getEmailInstitucional());
+        aluno.setCurso(alunoDTO.getCurso());
+        aluno.setMatriz(alunoDTO.getMatriz());
+        aluno.setPeriodoReferencia(alunoDTO.getPeriodoReferencia());
+        aluno.setSituacaoAluno(alunoDTO.getSituacaoAluno());
 
-        if (novoEmail != null && !novoEmail.isBlank() && !novoEmail.equals(alunoExistente.getEmail())) {
-            // Verifica se já existe outro aluno com esse e-mail
-            Optional<Aluno> alunoComMesmoEmail = alunoRepository.findByEmail(novoEmail);
+        Aluno alunoAtualizado = alunoRepository.save(aluno);
 
-            if (alunoComMesmoEmail.isPresent() &&
-                    !alunoComMesmoEmail.get().getMatriculaAcademica().equals(matriculaAcademica)) {
-                throw new DataIntegrityViolationException("Já existe outro aluno cadastrado com este e-mail.");
-            }
-
-            // Atualiza o e-mail
-            alunoExistente.setEmail(novoEmail);
-        }
-
-        Aluno alunoAtualizado = alunoRepository.save(alunoExistente);
         return modelMapper.map(alunoAtualizado, AlunoDTO.class);
     }
 
+    @Override
+    public AlunoDTO updateAlunoImagem(String matriculaAcademica, MultipartFile imagem) throws IOException {
+        Aluno alunoFromDB = alunoRepository.findById(matriculaAcademica)
+                .orElseThrow(() -> new ResourceNotFoundException("Aluno", "matriculaAcademica", matriculaAcademica));
+
+        String fileName = fileService.uploadImagem(path, imagem);
+        alunoFromDB.setImagem(fileName);
+        Aluno updatedAluno = alunoRepository.save(alunoFromDB);
+        return modelMapper.map(updatedAluno, AlunoDTO.class);
+    }
+
+    public AlunoDTO updatePerfilDescricao(String matriculaAcademica, AlunoDTO alunoDTO) {
+        Aluno aluno = alunoRepository.findById(matriculaAcademica)
+                .orElseThrow(() -> new ResourceNotFoundException("Aluno", "matriculaAcademica", matriculaAcademica));
+
+        aluno.setPerfilDescricao(alunoDTO.getPerfilDescricao());
+        Aluno alunoAtualizado = alunoRepository.save(aluno);
+        return modelMapper.map(alunoAtualizado, AlunoDTO.class);
+    }
 
     @Override
     public AlunoDTO deleteAluno(String matriculaAcademica) {

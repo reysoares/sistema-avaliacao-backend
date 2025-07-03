@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-public class AlunoAvaliacaoProfessorController {
+public class AvaliacaoProfessorController {
 
     @Autowired
     private AvaliacaoProfessorService avaliacaoProfessorService;
@@ -32,8 +32,8 @@ public class AlunoAvaliacaoProfessorController {
     }
 
     @PostMapping("/public/aluno/avaliacao/professor")
-    public ResponseEntity <AvaliacaoProfessorDTO> creatAvaliacaoProfessor(@Valid @RequestBody AvaliacaoProfessorDTO avaliacaoProfessorDTO) {
-        AvaliacaoProfessorDTO savedAvaliacaoProfessorDTO = avaliacaoProfessorService.creatAvaliacaoProfessor(avaliacaoProfessorDTO);
+    public ResponseEntity <AvaliacaoProfessorDTO> createAvaliacaoProfessor(@Valid @RequestBody AvaliacaoProfessorDTO avaliacaoProfessorDTO) {
+        AvaliacaoProfessorDTO savedAvaliacaoProfessorDTO = avaliacaoProfessorService.createAvaliacaoProfessor(avaliacaoProfessorDTO);
         return new ResponseEntity<>(savedAvaliacaoProfessorDTO, HttpStatus.CREATED);
     }
 

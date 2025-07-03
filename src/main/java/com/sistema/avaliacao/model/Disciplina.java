@@ -19,6 +19,7 @@ public class Disciplina {
     private String nome;
     private String curso;
     private String semestre;
+    private String descricao;
     private int cargaHoraria;
 
     @ManyToOne(fetch = FetchType.LAZY)

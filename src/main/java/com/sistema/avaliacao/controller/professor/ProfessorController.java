@@ -1,5 +1,7 @@
 package com.sistema.avaliacao.controller.professor;
 
+import com.sistema.avaliacao.payload.dto.AlunoDTO;
+import com.sistema.avaliacao.payload.response.AlunoResponse;
 import com.sistema.avaliacao.payload.response.AvaliacaoProfessorResponse;
 import com.sistema.avaliacao.payload.response.DisciplinaResponse;
 import com.sistema.avaliacao.service.avaliacao.AvaliacaoProfessorService;
@@ -22,6 +24,9 @@ import com.sistema.avaliacao.payload.response.ProfessorResponse;
 import com.sistema.avaliacao.service.professor.ProfessorService;
 
 import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
@@ -36,7 +41,7 @@ public class ProfessorController {
     @Autowired
     private AvaliacaoProfessorService avaliacaoProfessorService;
 
-    @GetMapping("/public/professor")
+    @GetMapping("/public/professores")
     public ResponseEntity <ProfessorResponse> getAllProfessor(
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
@@ -44,6 +49,17 @@ public class ProfessorController {
             @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
         ProfessorResponse professorResponse = professorService.getAllProfessor(pageNumber, pageSize, sortBy, sortOrder);
         return new ResponseEntity<>(professorResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/public/professores/keyword/{keyword}")
+    public ResponseEntity <ProfessorResponse> getProfessoresByKeyword(
+            @PathVariable String keyword,
+            @RequestParam (name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam (name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam (name = "sortBy", defaultValue = AppConstants.SORT_ALUNOS_BY, required = false) String sortBy,
+            @RequestParam (name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
+        ProfessorResponse professorResponse = professorService.searchAlunoByKeyword(keyword, pageNumber, pageSize, sortBy, sortOrder);
+        return new ResponseEntity<>(professorResponse, HttpStatus.FOUND);
     }
 
     @GetMapping("/public/professor/disciplinas/{matriculaFuncional}")
@@ -80,8 +96,20 @@ public class ProfessorController {
 
     @PutMapping("/public/professor/{matriculaFuncional}")
     public ResponseEntity <ProfessorDTO> updateProfessor(@Valid @RequestBody ProfessorDTO professorDTO, @PathVariable String matriculaFuncional) {
-        ProfessorDTO updatedProfessorDTO = professorService.updateProfessor(professorDTO, matriculaFuncional);
+        ProfessorDTO updatedProfessorDTO = professorService.atualizarProfessorViaSuap(professorDTO, matriculaFuncional);
         return new ResponseEntity<>(updatedProfessorDTO, HttpStatus.OK);
+    }
+
+    @PutMapping("/public/professor/{matriculaFuncional}/imagem")
+    public ResponseEntity <ProfessorDTO> updateProfessorImagem(@PathVariable String matriculaFuncional, @RequestParam("imagem") MultipartFile imagem) throws IOException {
+        ProfessorDTO updateProfessorDTO = professorService.updateProfessorImagem(matriculaFuncional, imagem);
+        return new ResponseEntity<>(updateProfessorDTO, HttpStatus.OK);
+    }
+
+    @PutMapping("/public/professor/{matriculaFuncional}/descricao")
+    public ResponseEntity<ProfessorDTO> updateProfessorDescricao(@PathVariable String matriculaFuncional, @RequestBody ProfessorDTO professorDTO) {
+        ProfessorDTO updateProfessorDTO = professorService.updatePerfilDescricao(matriculaFuncional, professorDTO);
+        return new ResponseEntity<>(updateProfessorDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/admin/professor/{matriculaFuncional}")

@@ -16,14 +16,13 @@ public class CoordenadorController {
     private CoordenadorService coordenadorService;
 
     @PostMapping("/admin/coordenador")
-    public ResponseEntity<CoordenadorDTO> creatCoordenador(@Valid @RequestBody CoordenadorDTO coordenadorDTO) {
-        CoordenadorDTO savedCoordenadorDTO = coordenadorService.creatCoordenador(coordenadorDTO);
+    public ResponseEntity<CoordenadorDTO> createCoordenador(@Valid @RequestBody CoordenadorDTO coordenadorDTO) {
+        CoordenadorDTO savedCoordenadorDTO = coordenadorService.createCoordenador(coordenadorDTO);
         return new ResponseEntity<>(savedCoordenadorDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/admin/coordenador/{matriculaFuncionalCoordenador}")
-    public ResponseEntity<CoordenadorDTO> updateCoordenador(@Valid @RequestBody CoordenadorDTO coordenadorDTO,
-                                                            @PathVariable String matriculaFuncionalCoordenador) {
+    public ResponseEntity<CoordenadorDTO> updateCoordenador(@Valid @RequestBody CoordenadorDTO coordenadorDTO, @PathVariable String matriculaFuncionalCoordenador) {
         CoordenadorDTO updatedCoordenadorDTO = coordenadorService.updateCoordenador(coordenadorDTO, matriculaFuncionalCoordenador);
         return new ResponseEntity<>(updatedCoordenadorDTO, HttpStatus.OK);
     }

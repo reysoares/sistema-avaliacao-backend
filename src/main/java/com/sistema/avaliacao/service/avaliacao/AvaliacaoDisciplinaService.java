@@ -7,7 +7,7 @@ public interface AvaliacaoDisciplinaService {
 
     AvaliacaoDisciplinaResponse getAlunoAvaliacoes(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, AlunoDTO alunoDTO);
     AvaliacaoDisciplinaResponse getDisciplinaAvaliacoes(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, DisciplinaDTO disciplinaDTO);
-    AvaliacaoDisciplinaDTO creatAvaliacaoDisciplina(AvaliacaoDisciplinaDTO avaliacaoDisciplinaDTO);
+    AvaliacaoDisciplinaDTO createAvaliacaoDisciplina(AvaliacaoDisciplinaDTO avaliacaoDisciplinaDTO);
     AvaliacaoDisciplinaDTO updateAvaliacaoDisciplina( AvaliacaoDisciplinaDTO avaliacaoDisciplinaDTO, String matriculaAcademica, Long id);
     AvaliacaoDisciplinaDTO deleteAvaliacaoDisciplina(String matriculaAcademica, Long id);
 }

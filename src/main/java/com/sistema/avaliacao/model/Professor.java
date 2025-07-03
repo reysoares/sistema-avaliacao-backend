@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.*;
 
+import java.time.LocalDate;
+
 
 @Entity
 @Getter
@@ -16,8 +18,14 @@ public class Professor {
     @Id
     @EqualsAndHashCode.Include
     private String matriculaFuncional;
+
     private String nome;
-    private String email;
+    private String emailInstitucional;
     private String departamento;
+    private String unidadeEnsino;
+    private String areaAtuacao;
+    private LocalDate dataNascimento;
+    private String imagem;
+    private String perfilDescricao;
 
 }

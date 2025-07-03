@@ -84,7 +84,7 @@ public class AvaliacaoProfessorServiceImplement implements AvaliacaoProfessorSer
     }
 
     @Override
-    public AvaliacaoProfessorDTO creatAvaliacaoProfessor(AvaliacaoProfessorDTO avaliacaoProfessorDTO) {
+    public AvaliacaoProfessorDTO createAvaliacaoProfessor(AvaliacaoProfessorDTO avaliacaoProfessorDTO) {
         AvaliacaoProfessor avaliacaoProfessor = modelMapper.map(avaliacaoProfessorDTO, AvaliacaoProfessor.class);
 
         if (avaliacaoProfessor.getAluno() == null || avaliacaoProfessor.getProfessor() == null) {

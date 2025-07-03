@@ -2,6 +2,7 @@ package com.sistema.avaliacao.controller.coordenador;
 
 import com.sistema.avaliacao.config.AppConstants;
 import com.sistema.avaliacao.payload.dto.DisciplinaDTO;
+import com.sistema.avaliacao.payload.response.AlunoResponse;
 import com.sistema.avaliacao.payload.response.AvaliacaoDisciplinaResponse;
 import com.sistema.avaliacao.payload.response.DisciplinaResponse;
 import com.sistema.avaliacao.service.avaliacao.AvaliacaoDisciplinaService;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-public class CoordenadorDisciplinaController {
+public class DisciplinaController {
 
     @Autowired
     private DisciplinaService disciplinaService;
@@ -31,6 +32,17 @@ public class CoordenadorDisciplinaController {
 
         DisciplinaResponse disciplinaResponse = disciplinaService.getAllDisciplinas(pageNumber, pageSize, sortBy, sortOrder);
         return new ResponseEntity<>(disciplinaResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/public/disciplina/keyword/{keyword}")
+    public ResponseEntity <DisciplinaResponse> getDisciplinaByKeyword(
+            @PathVariable String keyword,
+            @RequestParam (name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam (name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam (name = "sortBy", defaultValue = AppConstants.SORT_DISCIPLINAS_BY, required = false) String sortBy,
+            @RequestParam (name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
+        DisciplinaResponse disciplinaResponse = disciplinaService.searchAlunoByKeyword(keyword, pageNumber, pageSize, sortBy, sortOrder);
+        return new ResponseEntity<>(disciplinaResponse, HttpStatus.FOUND);
     }
 
     @GetMapping("/public/avaliacoes/disciplina/{codigo}")
@@ -55,10 +67,7 @@ public class CoordenadorDisciplinaController {
     }
 
     @PutMapping("/admin/disciplina/{codigo}")
-    public ResponseEntity<DisciplinaDTO> updateDisciplina(
-            @Valid @RequestBody DisciplinaDTO disciplinaDTO,
-            @PathVariable String codigo) {
-
+    public ResponseEntity<DisciplinaDTO> updateDisciplina(@Valid @RequestBody DisciplinaDTO disciplinaDTO, @PathVariable String codigo) {
         DisciplinaDTO updatedDisciplinaDTO = disciplinaService.updateDisciplina(disciplinaDTO, codigo);
         return new ResponseEntity<>(updatedDisciplinaDTO, HttpStatus.OK);
     }

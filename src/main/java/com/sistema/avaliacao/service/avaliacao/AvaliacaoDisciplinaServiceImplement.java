@@ -79,7 +79,7 @@ public class AvaliacaoDisciplinaServiceImplement implements AvaliacaoDisciplinaS
     }
 
     @Override
-    public AvaliacaoDisciplinaDTO creatAvaliacaoDisciplina(AvaliacaoDisciplinaDTO avaliacaoDisciplinaDTO) {
+    public AvaliacaoDisciplinaDTO createAvaliacaoDisciplina(AvaliacaoDisciplinaDTO avaliacaoDisciplinaDTO) {
         AvaliacaoDisciplina avaliacaoDisciplina = modelMapper.map(avaliacaoDisciplinaDTO, AvaliacaoDisciplina.class);
 
         if (avaliacaoDisciplina.getAluno() == null || avaliacaoDisciplina.getDisciplina() == null) {

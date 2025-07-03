@@ -19,7 +19,7 @@ public class CoordenadorServiceImplement implements CoordenadorService {
     private ModelMapper modelMapper;
 
     @Override
-    public CoordenadorDTO creatCoordenador(CoordenadorDTO coordenadorDTO) {
+    public CoordenadorDTO createCoordenador(CoordenadorDTO coordenadorDTO) {
         Coordenador coordenador = modelMapper.map(coordenadorDTO, Coordenador.class);
 
         boolean coordenadorJaExiste = coordenadorRepository.findAll().stream().findAny().isPresent();

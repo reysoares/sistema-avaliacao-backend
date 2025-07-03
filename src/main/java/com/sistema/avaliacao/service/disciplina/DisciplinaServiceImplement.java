@@ -2,6 +2,7 @@ package com.sistema.avaliacao.service.disciplina;
 
 import com.sistema.avaliacao.exceptions.APIException;
 import com.sistema.avaliacao.exceptions.ResourceNotFoundException;
+import com.sistema.avaliacao.model.Aluno;
 import com.sistema.avaliacao.model.Disciplina;
 import com.sistema.avaliacao.model.Professor;
 import com.sistema.avaliacao.payload.dto.DisciplinaDTO;
@@ -48,21 +49,33 @@ public class DisciplinaServiceImplement implements DisciplinaService {
 
     @Override
     public DisciplinaResponse getAllDisciplinas(Integer pageNumber, Integer pageSize, String sortBy, String order) {
-        // Configura a ordenação
         Sort sort = order.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        // Configura a paginação
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        // Busca as disciplinas paginadas
         Page<Disciplina> disciplinasPage = disciplinaRepository.findAll(pageable);
         List<Disciplina> disciplinas = disciplinasPage.getContent();
 
-        // Verifica se há disciplinas
         if (disciplinas.isEmpty()) {
             throw new APIException("Nenhuma disciplina encontrada.");
+        }
+
+        return buildDisciplinaResponse(disciplinasPage);
+    }
+
+    @Override
+    public DisciplinaResponse searchAlunoByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sort = Sort.by("nome").ascending();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+        Page<Disciplina> disciplinasPage = disciplinaRepository.findByNomeStartingWithIgnoreCase(keyword, pageable);
+
+        List<Disciplina> disciplinas = disciplinasPage.getContent();
+
+        if (disciplinas.isEmpty()) {
+            throw new APIException("Nenhuma disciplina encontrado com: " + keyword);
         }
 
         return buildDisciplinaResponse(disciplinasPage);
@@ -88,60 +101,45 @@ public class DisciplinaServiceImplement implements DisciplinaService {
 
     @Override
     public DisciplinaDTO createDisciplina(DisciplinaDTO disciplinaDTO) {
-        // Verifica se a disciplina já existe
-        if (disciplinaRepository.existsById(disciplinaDTO.getCodigo())) {
-            throw new APIException("Já existe uma disciplina com este código.");
-        }
-
-        // Converte DTO para entidade
         Disciplina disciplina = modelMapper.map(disciplinaDTO, Disciplina.class);
+        Disciplina disciplinaFromDB = disciplinaRepository.findById(disciplina.getCodigo())
+                .orElse(null);
 
-        // Busca professor no banco pela matrícula para associar a entidade gerenciada
-        String matricula = disciplinaDTO.getProfessor().getMatriculaFuncional();
-        Professor professor = professorRepository.findById(matricula)
-                .orElseThrow(() -> new ResourceNotFoundException("Professor", "matrícula", matricula));
+        if (disciplinaFromDB != null)
+            throw new APIException("Disciplina já cadastrada.");
 
-        // Associa o professor carregado à disciplina
+        String professorMatriculaFuncional = disciplinaDTO.getProfessor().getMatriculaFuncional();
+
+        Professor professor = professorRepository.findById(professorMatriculaFuncional)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor", "matrícula", professorMatriculaFuncional));
+
         disciplina.setProfessor(professor);
-
-        // Salva no banco
         Disciplina savedDisciplina = disciplinaRepository.save(disciplina);
-
-        // Converte de volta para DTO e retorna
         return modelMapper.map(savedDisciplina, DisciplinaDTO.class);
     }
 
     @Override
     public DisciplinaDTO updateDisciplina(DisciplinaDTO disciplinaDTO, String codigo) {
-        // Busca a disciplina existente
-        Disciplina disciplinaExistente = disciplinaRepository.findById(codigo)
+        Disciplina disciplina = disciplinaRepository.findById(codigo)
                 .orElseThrow(() -> new ResourceNotFoundException("Disciplina", "código", codigo));
 
-        // Atualiza os dados
-        disciplinaExistente.setNome(disciplinaDTO.getNome());
-        disciplinaExistente.setCurso(disciplinaDTO.getCurso());
-        disciplinaExistente.setSemestre(disciplinaDTO.getSemestre());
-        disciplinaExistente.setCargaHoraria(disciplinaDTO.getCargaHoraria());
+        disciplina.setNome(disciplinaDTO.getNome());
+        disciplina.setCurso(disciplinaDTO.getCurso());
+        disciplina.setSemestre(disciplinaDTO.getSemestre());
+        disciplina.setDescricao(disciplinaDTO.getDescricao());
+        disciplina.setCargaHoraria(disciplinaDTO.getCargaHoraria());
 
-        // Salva as alterações
-        Disciplina disciplinaAtualizada = disciplinaRepository.save(disciplinaExistente);
-
-        // Retorna como DTO
+        Disciplina disciplinaAtualizada = disciplinaRepository.save(disciplina);
         return modelMapper.map(disciplinaAtualizada, DisciplinaDTO.class);
     }
 
     @Override
     public DisciplinaDTO deleteDisciplina(String codigo) {
-        // Verifica se a disciplina existe
         Disciplina disciplina = disciplinaRepository.findById(codigo)
                 .orElseThrow(() -> new ResourceNotFoundException("Disciplina", "código", codigo));
 
-        // Converte para DTO antes de deletar
         DisciplinaDTO disciplinaDTO = modelMapper.map(disciplina, DisciplinaDTO.class);
-
-        // Remove do banco
         disciplinaRepository.delete(disciplina);
-
         return disciplinaDTO;
     }
 }
