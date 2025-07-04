@@ -2,7 +2,6 @@ package com.sistema.avaliacao.service.disciplina;
 
 import com.sistema.avaliacao.exceptions.APIException;
 import com.sistema.avaliacao.exceptions.ResourceNotFoundException;
-import com.sistema.avaliacao.model.Aluno;
 import com.sistema.avaliacao.model.Disciplina;
 import com.sistema.avaliacao.model.Professor;
 import com.sistema.avaliacao.payload.dto.DisciplinaDTO;
@@ -32,19 +31,19 @@ public class DisciplinaServiceImplement implements DisciplinaService {
     @Autowired
     private ModelMapper modelMapper;
 
-    private DisciplinaResponse buildDisciplinaResponse(Page<Disciplina> page) {
-        List<DisciplinaDTO> dtos = page.getContent().stream()
+    private DisciplinaResponse buildDisciplinaResponse(Page<Disciplina> disciplinaPage) {
+        List<DisciplinaDTO> dtos = disciplinaPage.getContent().stream()
                 .map(av -> modelMapper.map(av, DisciplinaDTO.class))
                 .toList();
 
-        DisciplinaResponse response = new DisciplinaResponse();
-        response.setContent(dtos);
-        response.setPageNumber(page.getNumber());
-        response.setPageSize(page.getSize());
-        response.setTotalElements(page.getTotalElements());
-        response.setTotalPages(page.getTotalPages());
-        response.setLastPage(page.isLast());
-        return response;
+        DisciplinaResponse disciplinaResponse = new DisciplinaResponse();
+        disciplinaResponse.setContent(dtos);
+        disciplinaResponse.setPageNumber(disciplinaPage.getNumber());
+        disciplinaResponse.setPageSize(disciplinaPage.getSize());
+        disciplinaResponse.setTotalElements(disciplinaPage.getTotalElements());
+        disciplinaResponse.setTotalPages(disciplinaPage.getTotalPages());
+        disciplinaResponse.setLastPage(disciplinaPage.isLast());
+        return disciplinaResponse;
     }
 
     @Override

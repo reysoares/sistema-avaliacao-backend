@@ -38,19 +38,19 @@ public class AvaliacaoProfessorServiceImplement implements AvaliacaoProfessorSer
     @Autowired
     private ModelMapper modelMapper;
 
-    private AvaliacaoProfessorResponse buildAvaliacaoProfessorResponse(Page<AvaliacaoProfessor> page) {
-        List<AvaliacaoProfessorDTO> dtos = page.getContent().stream()
+    private AvaliacaoProfessorResponse buildAvaliacaoProfessorResponse(Page<AvaliacaoProfessor> avaliacaoProfessorPage) {
+        List<AvaliacaoProfessorDTO> dtos = avaliacaoProfessorPage.getContent().stream()
                 .map(av -> modelMapper.map(av, AvaliacaoProfessorDTO.class))
                 .toList();
 
-        AvaliacaoProfessorResponse response = new AvaliacaoProfessorResponse();
-        response.setContent(dtos);
-        response.setPageNumber(page.getNumber());
-        response.setPageSize(page.getSize());
-        response.setTotalElements(page.getTotalElements());
-        response.setTotalPages(page.getTotalPages());
-        response.setLastPage(page.isLast());
-        return response;
+        AvaliacaoProfessorResponse avaliacaoProfessorResponse = new AvaliacaoProfessorResponse();
+        avaliacaoProfessorResponse.setContent(dtos);
+        avaliacaoProfessorResponse.setPageNumber(avaliacaoProfessorPage.getNumber());
+        avaliacaoProfessorResponse.setPageSize(avaliacaoProfessorPage.getSize());
+        avaliacaoProfessorResponse.setTotalElements(avaliacaoProfessorPage.getTotalElements());
+        avaliacaoProfessorResponse.setTotalPages(avaliacaoProfessorPage.getTotalPages());
+        avaliacaoProfessorResponse.setLastPage(avaliacaoProfessorPage.isLast());
+        return avaliacaoProfessorResponse;
     }
 
     @Override
@@ -105,7 +105,6 @@ public class AvaliacaoProfessorServiceImplement implements AvaliacaoProfessorSer
 
         avaliacaoProfessor.setAluno(aluno);
         avaliacaoProfessor.setProfessor(professor);
-        avaliacaoProfessor.setId(null); // para garantir nova inserção
 
         AvaliacaoProfessor savedAvaliacaoProfessor = avaliacaoProfessorRepository.save(avaliacaoProfessor);
         return modelMapper.map(savedAvaliacaoProfessor, AvaliacaoProfessorDTO.class);
@@ -114,29 +113,23 @@ public class AvaliacaoProfessorServiceImplement implements AvaliacaoProfessorSer
 
     @Override
     public AvaliacaoProfessorDTO updateAvaliacaoProfessor(AvaliacaoProfessorDTO avaliacaoProfessorDTO, String matriculaAcademica, Long id) {
-        // Busca a avaliação existente
         AvaliacaoProfessor avaliacaoExistente = avaliacaoProfessorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Avaliação", "id", id));
 
-        // Verifica permissão do aluno
         if (!avaliacaoExistente.getAluno().getMatriculaAcademica().equals(matriculaAcademica)) {
             throw new APIException("Você não tem permissão para atualizar esta avaliação.");
         }
 
-        // Atualiza as notas
         avaliacaoExistente.setNotaDidatica(avaliacaoProfessorDTO.getNotaDidatica());
         avaliacaoExistente.setNotaDominioConteudo(avaliacaoProfessorDTO.getNotaDominioConteudo());
         avaliacaoExistente.setNotaInteracaoAlunos(avaliacaoProfessorDTO.getNotaInteracaoAlunos());
 
-        // Atualiza comentário, se existir
         if (avaliacaoProfessorDTO.getComentario() != null) {
             avaliacaoExistente.setComentario(avaliacaoProfessorDTO.getComentario());
         }
 
-        // Salva a avaliação atualizada
         AvaliacaoProfessor atualizada = avaliacaoProfessorRepository.save(avaliacaoExistente);
 
-        // Retorna o DTO atualizado
         return modelMapper.map(atualizada, AvaliacaoProfessorDTO.class);
     }
 

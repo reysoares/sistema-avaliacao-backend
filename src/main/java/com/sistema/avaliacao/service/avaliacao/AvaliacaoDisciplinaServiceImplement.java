@@ -33,19 +33,19 @@ public class AvaliacaoDisciplinaServiceImplement implements AvaliacaoDisciplinaS
     @Autowired
     private ModelMapper modelMapper;
 
-    private AvaliacaoDisciplinaResponse buildAvaliacaoDisciplinaResponse(Page<AvaliacaoDisciplina> page) {
-        List<AvaliacaoDisciplinaDTO> dtos = page.getContent().stream()
+    private AvaliacaoDisciplinaResponse buildAvaliacaoDisciplinaResponse(Page<AvaliacaoDisciplina> avaliacaoDisciplinaPage) {
+        List<AvaliacaoDisciplinaDTO> dtos = avaliacaoDisciplinaPage.getContent().stream()
                 .map(av -> modelMapper.map(av, AvaliacaoDisciplinaDTO.class))
                 .toList();
 
-        AvaliacaoDisciplinaResponse response = new AvaliacaoDisciplinaResponse();
-        response.setContent(dtos);
-        response.setPageNumber(page.getNumber());
-        response.setPageSize(page.getSize());
-        response.setTotalElements(page.getTotalElements());
-        response.setTotalPages(page.getTotalPages());
-        response.setLastPage(page.isLast());
-        return response;
+        AvaliacaoDisciplinaResponse avaliacaoDisciplinaResponse = new AvaliacaoDisciplinaResponse();
+        avaliacaoDisciplinaResponse.setContent(dtos);
+        avaliacaoDisciplinaResponse.setPageNumber(avaliacaoDisciplinaPage.getNumber());
+        avaliacaoDisciplinaResponse.setPageSize(avaliacaoDisciplinaPage.getSize());
+        avaliacaoDisciplinaResponse.setTotalElements(avaliacaoDisciplinaPage.getTotalElements());
+        avaliacaoDisciplinaResponse.setTotalPages(avaliacaoDisciplinaPage.getTotalPages());
+        avaliacaoDisciplinaResponse.setLastPage(avaliacaoDisciplinaPage.isLast());
+        return avaliacaoDisciplinaResponse;
     }
 
     @Override
@@ -100,7 +100,6 @@ public class AvaliacaoDisciplinaServiceImplement implements AvaliacaoDisciplinaS
 
         avaliacaoDisciplina.setAluno(aluno);
         avaliacaoDisciplina.setDisciplina(disciplina);
-        avaliacaoDisciplina.setId(null); // para garantir nova inserção
 
         AvaliacaoDisciplina savedAvaliacaoDisciplina = avaliacaoDisciplinaRepository.save(avaliacaoDisciplina);
         return modelMapper.map(savedAvaliacaoDisciplina, AvaliacaoDisciplinaDTO.class);
@@ -108,26 +107,21 @@ public class AvaliacaoDisciplinaServiceImplement implements AvaliacaoDisciplinaS
 
     @Override
     public AvaliacaoDisciplinaDTO updateAvaliacaoDisciplina(AvaliacaoDisciplinaDTO avaliacaoDisciplinaDTO, String matriculaAcademica, Long id) {
-        // Busca a avaliação existente
         AvaliacaoDisciplina avaliacaoExistente = avaliacaoDisciplinaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Avaliação", "id", id));
 
-        // Verifica se o aluno tem permissão para atualizar
         if (!avaliacaoExistente.getAluno().getMatriculaAcademica().equals(matriculaAcademica)) {
             throw new APIException("Você não tem permissão para atualizar esta avaliação.");
         }
 
-        // Atualiza os campos permitidos
         avaliacaoExistente.setNotaConteudo(avaliacaoDisciplinaDTO.getNotaConteudo());
         avaliacaoExistente.setNotaCargaTrabalho(avaliacaoDisciplinaDTO.getNotaCargaTrabalho());
         avaliacaoExistente.setNotaInfraestrutura(avaliacaoDisciplinaDTO.getNotaInfraestrutura());
 
-        // Atualiza o comentário, se existir (herdado de AvaliacaoDTO)
         if (avaliacaoDisciplinaDTO.getComentario() != null) {
             avaliacaoExistente.setComentario(avaliacaoDisciplinaDTO.getComentario());
         }
 
-        // Salva e retorna a avaliação atualizada
         AvaliacaoDisciplina atualizada = avaliacaoDisciplinaRepository.save(avaliacaoExistente);
         return modelMapper.map(atualizada, AvaliacaoDisciplinaDTO.class);
     }

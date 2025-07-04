@@ -6,5 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProfessorRepository extends JpaRepository<Professor, String> {
+
     Page<Professor> findByNomeStartingWithIgnoreCase(String keyword, Pageable pageable);
+
 }

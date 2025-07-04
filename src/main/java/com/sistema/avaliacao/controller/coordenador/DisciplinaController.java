@@ -2,7 +2,6 @@ package com.sistema.avaliacao.controller.coordenador;
 
 import com.sistema.avaliacao.config.AppConstants;
 import com.sistema.avaliacao.payload.dto.DisciplinaDTO;
-import com.sistema.avaliacao.payload.response.AlunoResponse;
 import com.sistema.avaliacao.payload.response.AvaliacaoDisciplinaResponse;
 import com.sistema.avaliacao.payload.response.DisciplinaResponse;
 import com.sistema.avaliacao.service.avaliacao.AvaliacaoDisciplinaService;

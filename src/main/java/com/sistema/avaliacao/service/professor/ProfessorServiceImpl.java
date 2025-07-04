@@ -3,9 +3,6 @@ package com.sistema.avaliacao.service.professor;
 import java.io.IOException;
 import java.util.List;
 
-import com.sistema.avaliacao.model.Aluno;
-import com.sistema.avaliacao.payload.dto.AlunoDTO;
-import com.sistema.avaliacao.payload.response.AlunoResponse;
 import com.sistema.avaliacao.service.file.FileService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +36,21 @@ public class ProfessorServiceImpl  implements ProfessorService{
     @Value("${project.image}")
     private String path;
 
+    private ProfessorResponse buildProfessorResponse(Page<Professor> professorPage) {
+        List<ProfessorDTO> dtos = professorPage.getContent().stream()
+                .map(av -> modelMapper.map(av, ProfessorDTO.class))
+                .toList();
+
+        ProfessorResponse professorResponse = new ProfessorResponse();
+        professorResponse.setContent(dtos);
+        professorResponse.setPageNumber(professorPage.getNumber());
+        professorResponse.setPageSize(professorPage.getSize());
+        professorResponse.setTotalElements(professorPage.getTotalElements());
+        professorResponse.setTotalPages(professorPage.getTotalPages());
+        professorResponse.setLastPage(professorPage.isLast());
+        return professorResponse;
+    }
+
     @Override
     public ProfessorResponse getAllProfessor(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
@@ -51,18 +63,7 @@ public class ProfessorServiceImpl  implements ProfessorService{
         if (professores.isEmpty())
             throw new APIException("Nenhum professor criado até agora.");
 
-        List <ProfessorDTO> professorDTOS = professores.stream()
-                .map(professor -> modelMapper.map(professor, ProfessorDTO.class))
-                .toList();
-
-        ProfessorResponse professorResponse = new ProfessorResponse();
-        professorResponse.setContent(professorDTOS);
-        professorResponse.setPageNumber(professorPage.getNumber());
-        professorResponse.setPageSize(professorPage.getSize());
-        professorResponse.setTotalElements(professorPage.getTotalElements());
-        professorResponse.setTotalPages(professorPage.getTotalPages());
-        professorResponse.setLastPage(professorPage.isLast());
-        return professorResponse;
+        return buildProfessorResponse(professorPage);
     }
 
     @Override
@@ -75,22 +76,10 @@ public class ProfessorServiceImpl  implements ProfessorService{
         List<Professor> professores = pageProfessores.getContent();
 
         if (professores.isEmpty()) {
-            throw new APIException("Nenhum aluno encontrado com: " + keyword);
+            throw new APIException("Nenhum professor encontrado com: " + keyword);
         }
 
-        List<ProfessorDTO> professorDTOS = professores.stream()
-                .map(professor -> modelMapper.map(professor, ProfessorDTO.class))
-                .toList();
-
-        ProfessorResponse professorResponse = new ProfessorResponse();
-        professorResponse.setContent(professorDTOS);
-        professorResponse.setPageNumber(pageProfessores.getNumber());
-        professorResponse.setPageSize(pageProfessores.getSize());
-        professorResponse.setTotalElements(pageProfessores.getTotalElements());
-        professorResponse.setTotalPages(pageProfessores.getTotalPages());
-        professorResponse.setLastPage(pageProfessores.isLast());
-
-        return professorResponse;
+        return buildProfessorResponse(pageProfessores);
     }
 
     @Override

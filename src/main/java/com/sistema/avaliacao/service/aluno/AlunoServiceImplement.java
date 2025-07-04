@@ -35,6 +35,21 @@ public class AlunoServiceImplement implements AlunoService {
     @Value("${project.image}")
     private String path;
 
+    private AlunoResponse buildAlunoResponse(Page<Aluno> alunoPage) {
+        List<AlunoDTO> dtos = alunoPage.getContent().stream()
+                .map(av -> modelMapper.map(av, AlunoDTO.class))
+                .toList();
+
+        AlunoResponse alunoResponse = new AlunoResponse();
+        alunoResponse.setContent(dtos);
+        alunoResponse.setPageNumber(alunoPage.getNumber());
+        alunoResponse.setPageSize(alunoPage.getSize());
+        alunoResponse.setTotalElements(alunoPage.getTotalElements());
+        alunoResponse.setTotalPages(alunoPage.getTotalPages());
+        alunoResponse.setLastPage(alunoPage.isLast());
+        return alunoResponse;
+    }
+
     @Override
     public AlunoResponse getAllAlunos(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
@@ -47,18 +62,7 @@ public class AlunoServiceImplement implements AlunoService {
         if (alunos.isEmpty())
             throw new APIException("Nenhum aluno criado até agora.");
 
-        List <AlunoDTO> alunoDTOS = alunos.stream()
-                .map(aluno -> modelMapper.map(aluno, AlunoDTO.class))
-                .toList();
-
-        AlunoResponse alunoResponse = new AlunoResponse();
-        alunoResponse.setContent(alunoDTOS);
-        alunoResponse.setPageNumber(alunoPage.getNumber());
-        alunoResponse.setPageSize(alunoPage.getSize());
-        alunoResponse.setTotalElements(alunoPage.getTotalElements());
-        alunoResponse.setTotalPages(alunoPage.getTotalPages());
-        alunoResponse.setLastPage(alunoPage.isLast());
-        return alunoResponse;
+        return buildAlunoResponse(alunoPage);
     }
 
     @Override
@@ -74,19 +78,7 @@ public class AlunoServiceImplement implements AlunoService {
             throw new APIException("Nenhum aluno encontrado com: " + keyword);
         }
 
-        List<AlunoDTO> alunoDTOS = alunos.stream()
-                .map(aluno -> modelMapper.map(aluno, AlunoDTO.class))
-                .toList();
-
-        AlunoResponse alunoResponse = new AlunoResponse();
-        alunoResponse.setContent(alunoDTOS);
-        alunoResponse.setPageNumber(pageAlunos.getNumber());
-        alunoResponse.setPageSize(pageAlunos.getSize());
-        alunoResponse.setTotalElements(pageAlunos.getTotalElements());
-        alunoResponse.setTotalPages(pageAlunos.getTotalPages());
-        alunoResponse.setLastPage(pageAlunos.isLast());
-
-        return alunoResponse;
+        return buildAlunoResponse(pageAlunos);
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.sistema.avaliacao.controller.professor;
 
-import com.sistema.avaliacao.payload.dto.AlunoDTO;
-import com.sistema.avaliacao.payload.response.AlunoResponse;
 import com.sistema.avaliacao.payload.response.AvaliacaoProfessorResponse;
 import com.sistema.avaliacao.payload.response.DisciplinaResponse;
 import com.sistema.avaliacao.service.avaliacao.AvaliacaoProfessorService;
