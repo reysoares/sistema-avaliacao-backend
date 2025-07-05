@@ -5,14 +5,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class ProfessorDTO extends UsuarioDTO{
-    private String matriculaFuncional;
-    private String departamento;
-    private String unidadeEnsino;
-    private String areaAtuacao;
+public class AdministradorDTO  extends UsuarioDTO {
+    private String matriculaAdministrativa;
 }

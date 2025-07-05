@@ -82,28 +82,28 @@ public class AvaliacaoDisciplinaServiceImplement implements AvaliacaoDisciplinaS
     public AvaliacaoDisciplinaDTO createAvaliacaoDisciplina(AvaliacaoDisciplinaDTO avaliacaoDisciplinaDTO) {
         AvaliacaoDisciplina avaliacaoDisciplina = modelMapper.map(avaliacaoDisciplinaDTO, AvaliacaoDisciplina.class);
 
-        if (avaliacaoDisciplina.getAluno() == null || avaliacaoDisciplina.getDisciplina() == null) {
-            throw new APIException("Aluno ou Disciplina não informados corretamente.");
-        }
-
         String matriculaAluno = avaliacaoDisciplina.getAluno().getMatriculaAcademica();
-        String matriculaDisciplina = avaliacaoDisciplina.getDisciplina().getCodigo();
+        String codigoDisciplina = avaliacaoDisciplina.getDisciplina().getCodigo();
 
-        Aluno aluno = alunoRepository.findById(matriculaAluno)
+        if (matriculaAluno == null || codigoDisciplina == null)
+            throw new APIException("Matrícula do aluno ou código da disciplina ausente.");
+
+        Aluno aluno = alunoRepository.findByMatriculaAcademica(matriculaAluno)
                 .orElseThrow(() -> new APIException("Aluno com matrícula " + matriculaAluno + " não encontrado."));
-        Disciplina disciplina = disciplinaRepository.findById(matriculaDisciplina)
-                .orElseThrow(() -> new APIException("Disciplina com código: " + matriculaDisciplina + " não encontrado."));
 
-        if (avaliacaoDisciplinaRepository.existsByAlunoMatriculaAcademicaAndDisciplinaCodigo(matriculaAluno, matriculaDisciplina)) {
+        Disciplina disciplina = disciplinaRepository.findById(codigoDisciplina)
+                .orElseThrow(() -> new APIException("Disciplina com código: " + codigoDisciplina + " não encontrado."));
+
+        if (avaliacaoDisciplinaRepository.existsByAlunoMatriculaAcademicaAndDisciplinaCodigo(matriculaAluno, codigoDisciplina)) {
             throw new APIException("Este aluno já avaliou esta Disciplina.");
         }
 
         avaliacaoDisciplina.setAluno(aluno);
         avaliacaoDisciplina.setDisciplina(disciplina);
-
-        AvaliacaoDisciplina savedAvaliacaoDisciplina = avaliacaoDisciplinaRepository.save(avaliacaoDisciplina);
-        return modelMapper.map(savedAvaliacaoDisciplina, AvaliacaoDisciplinaDTO.class);
+        AvaliacaoDisciplina saved = avaliacaoDisciplinaRepository.save(avaliacaoDisciplina);
+        return modelMapper.map(saved, AvaliacaoDisciplinaDTO.class);
     }
+
 
     @Override
     public AvaliacaoDisciplinaDTO updateAvaliacaoDisciplina(AvaliacaoDisciplinaDTO avaliacaoDisciplinaDTO, String matriculaAcademica, Long id) {

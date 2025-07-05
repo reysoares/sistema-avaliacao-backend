@@ -22,7 +22,6 @@ public class AvaliacaoDisciplina extends Avaliacao {
     private int notaInfraestrutura;
 
     @Override
-    @Transient
     public double getMediaNotas() {
         return (notaConteudo + notaCargaTrabalho + notaInfraestrutura) / 3.0;
     }

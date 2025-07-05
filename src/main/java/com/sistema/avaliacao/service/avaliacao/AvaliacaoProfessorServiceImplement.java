@@ -87,16 +87,16 @@ public class AvaliacaoProfessorServiceImplement implements AvaliacaoProfessorSer
     public AvaliacaoProfessorDTO createAvaliacaoProfessor(AvaliacaoProfessorDTO avaliacaoProfessorDTO) {
         AvaliacaoProfessor avaliacaoProfessor = modelMapper.map(avaliacaoProfessorDTO, AvaliacaoProfessor.class);
 
-        if (avaliacaoProfessor.getAluno() == null || avaliacaoProfessor.getProfessor() == null) {
-            throw new APIException("Aluno ou Professor não informados corretamente.");
-        }
-
         String matriculaAluno = avaliacaoProfessor.getAluno().getMatriculaAcademica();
         String matriculaProfessor = avaliacaoProfessor.getProfessor().getMatriculaFuncional();
 
-        Aluno aluno = alunoRepository.findById(matriculaAluno)
+        if (matriculaAluno == null || matriculaProfessor == null)
+            throw new APIException("Matrícula do aluno ou do professor ausente.");
+
+        Aluno aluno = alunoRepository.findByMatriculaAcademica(matriculaAluno)
                 .orElseThrow(() -> new APIException("Aluno com matrícula " + matriculaAluno + " não encontrado."));
-        Professor professor = professorRepository.findById(matriculaProfessor)
+
+        Professor professor = professorRepository.findByMatriculaFuncional(matriculaProfessor)
                 .orElseThrow(() -> new APIException("Professor com matrícula funcional " + matriculaProfessor + " não encontrado."));
 
         if (avaliacaoProfessorRepository.existsByAlunoMatriculaAcademicaAndProfessorMatriculaFuncional(matriculaAluno, matriculaProfessor)) {

@@ -1,4 +1,4 @@
-package com.sistema.avaliacao.controller.coordenador;
+package com.sistema.avaliacao.controller.administrador;
 
 import com.sistema.avaliacao.config.AppConstants;
 import com.sistema.avaliacao.payload.dto.DisciplinaDTO;
@@ -30,6 +30,18 @@ public class DisciplinaController {
             @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
 
         DisciplinaResponse disciplinaResponse = disciplinaService.getAllDisciplinas(pageNumber, pageSize, sortBy, sortOrder);
+        return new ResponseEntity<>(disciplinaResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/public/disciplina/curso/{cursoId}")
+    public ResponseEntity<DisciplinaResponse> getDisciplinasByCurso(
+            @PathVariable Long cursoId,
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_DISCIPLINAS_BY, required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
+
+        DisciplinaResponse disciplinaResponse = disciplinaService.getDisciplinasByCurso(cursoId, pageNumber, pageSize, sortBy, sortOrder);
         return new ResponseEntity<>(disciplinaResponse, HttpStatus.OK);
     }
 
@@ -65,9 +77,9 @@ public class DisciplinaController {
         return new ResponseEntity<>(savedDisciplinaDTO, HttpStatus.CREATED);
     }
 
-    @PutMapping("/admin/disciplina/{codigo}")
-    public ResponseEntity<DisciplinaDTO> updateDisciplina(@Valid @RequestBody DisciplinaDTO disciplinaDTO, @PathVariable String codigo) {
-        DisciplinaDTO updatedDisciplinaDTO = disciplinaService.updateDisciplina(disciplinaDTO, codigo);
+    @PutMapping("/admin/disciplina/{codigo}/curso/{cursoId}/professor/{matriculaFuncional}")
+    public ResponseEntity<DisciplinaDTO> updateDisciplina(@Valid @RequestBody DisciplinaDTO disciplinaDTO, @PathVariable String codigo,  @PathVariable Long cursoId, @PathVariable String matriculaFuncional) {
+        DisciplinaDTO updatedDisciplinaDTO = disciplinaService.updateDisciplina(disciplinaDTO, codigo, cursoId, matriculaFuncional);
         return new ResponseEntity<>(updatedDisciplinaDTO, HttpStatus.OK);
     }
 

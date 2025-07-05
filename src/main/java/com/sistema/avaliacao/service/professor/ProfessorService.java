@@ -21,4 +21,5 @@ public interface ProfessorService {
     ProfessorDTO updatePerfilDescricao(String matriculaFuncional, ProfessorDTO professorDTO);
 
     ProfessorDTO deleteProfessor (String matriculaFuncional);
+
 }

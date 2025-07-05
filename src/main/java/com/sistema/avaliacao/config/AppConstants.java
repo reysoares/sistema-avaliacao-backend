@@ -6,5 +6,6 @@ public class AppConstants {
     public static final String SORT_ALUNOS_BY = "matriculaAcademica";
     public static final String SORT_DISCIPLINAS_BY = "codigo";
     public static final String SORT_PROFESSORES_BY = "matriculaFuncional";
+    public static final String SORT_CURSOS_BY = "id";
     public static final String SORT_DIR = "asc";
 }

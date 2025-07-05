@@ -1,27 +1,23 @@
 package com.sistema.avaliacao.payload.dto;
 
-import com.sistema.avaliacao.config.SituacaoAluno;
+import com.sistema.avaliacao.enums.SituacaoAluno;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AlunoDTO {
+@EqualsAndHashCode(callSuper = true)
+public class AlunoDTO extends UsuarioDTO {
 
     private String matriculaAcademica;
-    private String nome;
-    private String emailInstitucional;
-    private String curso;
     private String matriz;
     private int periodoReferencia;
     private SituacaoAluno situacaoAluno;
-    private LocalDate dataNascimento;
-    private String imagem;
-    private String perfilDescricao;
+    private CursoDTO curso;
 
 }

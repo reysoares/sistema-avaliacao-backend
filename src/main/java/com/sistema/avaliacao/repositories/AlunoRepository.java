@@ -11,4 +11,8 @@ public interface AlunoRepository extends JpaRepository <Aluno, String> {
 
     Page<Aluno> findByNomeStartingWithIgnoreCase(String keyword, Pageable pageable);
 
+    Page<Aluno> findByCursoId(Long cursoId, Pageable pageDetails);
+
+    Optional<Aluno> findByMatriculaAcademica(String matriculaAcademica);
+
 }

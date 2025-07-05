@@ -10,11 +10,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class AvaliacaoDTO {
-
     private Long id;
     private AlunoDTO aluno;
     private String comentario;
     private LocalDate data;
-    public abstract double getMediaNotas();
 
+    public abstract double getMediaNotas();
 }

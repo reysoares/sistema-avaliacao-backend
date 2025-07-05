@@ -10,11 +10,13 @@ public interface AlunoService {
 
     AlunoResponse getAllAlunos(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 
+    AlunoResponse getAlunosByCurso(Long cursoId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
+
     AlunoResponse searchAlunoByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 
     AlunoDTO createAluno(AlunoDTO alunoDTO);
 
-    AlunoDTO atualizarAlunoViaSuap(AlunoDTO alunoDTO, String matriculaAcademica);
+    AlunoDTO atualizarAlunoViaSuap(AlunoDTO alunoDTO, String matriculaAcademica, Long cursoId);
 
     AlunoDTO deleteAluno (String matriculaAcademica);
 

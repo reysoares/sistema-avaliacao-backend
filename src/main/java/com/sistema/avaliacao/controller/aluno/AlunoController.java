@@ -30,6 +30,17 @@ public class AlunoController {
         return new ResponseEntity<>(alunoResponse, HttpStatus.OK);
     }
 
+    @GetMapping("/public/alunos/curso/{cursoId}")
+    public ResponseEntity <AlunoResponse> getAlunosByCurso(
+            @PathVariable Long cursoId,
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_ALUNOS_BY, required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
+        AlunoResponse alunoResponse = alunoService.getAlunosByCurso(cursoId, pageNumber, pageSize, sortBy, sortOrder);
+        return new ResponseEntity<>(alunoResponse, HttpStatus.OK);
+    }
+
     @GetMapping("/public/alunos/keyword/{keyword}")
     public ResponseEntity <AlunoResponse> getAlunosByKeyword(
             @PathVariable String keyword,
@@ -47,9 +58,9 @@ public class AlunoController {
         return new ResponseEntity<>(savedAlunoDTO, HttpStatus.CREATED);
     }
 
-    @PutMapping("/public/aluno/{matriculaAcademica}")
-    public ResponseEntity <AlunoDTO> updateAluno(@Valid @RequestBody AlunoDTO alunoDTO, @PathVariable String matriculaAcademica) {
-        AlunoDTO updateAlunoDTO = alunoService.atualizarAlunoViaSuap(alunoDTO, matriculaAcademica);
+    @PutMapping("/public/aluno/{matriculaAcademica}/curso/{cursoId}")
+    public ResponseEntity <AlunoDTO> updateAluno(@Valid @RequestBody AlunoDTO alunoDTO, @PathVariable String matriculaAcademica, @PathVariable Long cursoId) {
+        AlunoDTO updateAlunoDTO = alunoService.atualizarAlunoViaSuap(alunoDTO, matriculaAcademica, cursoId);
         return new ResponseEntity<>(updateAlunoDTO, HttpStatus.OK);
     }
 

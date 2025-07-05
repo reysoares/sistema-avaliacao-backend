@@ -3,6 +3,7 @@ package com.sistema.avaliacao.service.professor;
 import java.io.IOException;
 import java.util.List;
 
+import com.sistema.avaliacao.repositories.CursoRepository;
 import com.sistema.avaliacao.service.file.FileService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class ProfessorServiceImpl  implements ProfessorService{
 
     @Autowired
     ProfessorRepository professorRepository;
+
+    @Autowired
+    CursoRepository cursoRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -85,7 +89,7 @@ public class ProfessorServiceImpl  implements ProfessorService{
     @Override
     public ProfessorDTO createProfessor(ProfessorDTO professorDTO) {
         Professor professor = modelMapper.map(professorDTO, Professor.class);
-        Professor professorFromDB = professorRepository.findById(professor.getMatriculaFuncional())
+        Professor professorFromDB = professorRepository.findByMatriculaFuncional(professor.getMatriculaFuncional())
                 .orElse(null);
 
         if (professorFromDB != null)
@@ -97,11 +101,12 @@ public class ProfessorServiceImpl  implements ProfessorService{
 
     @Override
     public ProfessorDTO atualizarProfessorViaSuap(ProfessorDTO professorDTO, String matriculaFuncional) {
-        Professor professor = professorRepository.findById(matriculaFuncional)
+        Professor professor = professorRepository.findByMatriculaFuncional(matriculaFuncional)
                 .orElseThrow(() -> new ResourceNotFoundException("Professor", "matriculaFuncional", matriculaFuncional));
 
         professor.setNome(professorDTO.getNome());
         professor.setEmailInstitucional(professorDTO.getEmailInstitucional());
+        professor.setPerfil(professorDTO.getPerfil());
         professor.setDepartamento(professorDTO.getDepartamento());
         professor.setUnidadeEnsino(professorDTO.getUnidadeEnsino());
         professor.setAreaAtuacao(professorDTO.getAreaAtuacao());
@@ -112,7 +117,7 @@ public class ProfessorServiceImpl  implements ProfessorService{
 
     @Override
     public ProfessorDTO updateProfessorImagem(String matriculaFuncional, MultipartFile imagem) throws IOException {
-        Professor professorFromDB = professorRepository.findById(matriculaFuncional)
+        Professor professorFromDB = professorRepository.findByMatriculaFuncional(matriculaFuncional)
                 .orElseThrow(() -> new ResourceNotFoundException("Professor", "matriculaFuncional", matriculaFuncional));
 
         String fileName = fileService.uploadImagem(path, imagem);
@@ -123,7 +128,7 @@ public class ProfessorServiceImpl  implements ProfessorService{
 
     @Override
     public ProfessorDTO updatePerfilDescricao(String matriculaFuncional, ProfessorDTO professorDTO) {
-        Professor professor = professorRepository.findById(matriculaFuncional)
+        Professor professor = professorRepository.findByMatriculaFuncional(matriculaFuncional)
                 .orElseThrow(() -> new ResourceNotFoundException("Professor", "matriculaFuncional", matriculaFuncional));
 
         professor.setPerfilDescricao(professorDTO.getPerfilDescricao());
@@ -133,7 +138,7 @@ public class ProfessorServiceImpl  implements ProfessorService{
 
     @Override
     public ProfessorDTO deleteProfessor(String matriculaFuncional) {
-        Professor professor = professorRepository.findById(matriculaFuncional)
+        Professor professor = professorRepository.findByMatriculaFuncional(matriculaFuncional)
                 .orElseThrow(() -> new ResourceNotFoundException("Professor", "matriculaFuncional", matriculaFuncional));
 
         ProfessorDTO professorDTO = modelMapper.map(professor, ProfessorDTO.class);

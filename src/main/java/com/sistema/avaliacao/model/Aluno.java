@@ -1,32 +1,29 @@
 package com.sistema.avaliacao.model;
 
-import com.sistema.avaliacao.config.SituacaoAluno;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sistema.avaliacao.enums.SituacaoAluno;
+import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDate;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Aluno {
+@PrimaryKeyJoinColumn(name = "id")
+public class Aluno extends Usuario {
 
-    @Id
-    @EqualsAndHashCode.Include
+    @Column(unique = true, nullable = false)
     private String matriculaAcademica;
 
-    private String nome;
-    private String emailInstitucional;
-    private String curso;
     private String matriz;
     private int periodoReferencia;
-    private SituacaoAluno situacaoAluno;
-    private LocalDate dataNascimento;
-    private String imagem;
-    private String perfilDescricao;
 
+    @Enumerated(EnumType.STRING)
+    private SituacaoAluno situacaoAluno;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "curso_aluno")
+    @JsonIgnore
+    private Curso curso;
 }

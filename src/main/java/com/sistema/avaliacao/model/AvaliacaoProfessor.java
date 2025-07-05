@@ -22,7 +22,6 @@ public class AvaliacaoProfessor extends Avaliacao {
     private int notaInteracaoAlunos;
 
     @Override
-    @Transient
     public double getMediaNotas() {
         return (notaDidatica + notaDominioConteudo + notaInteracaoAlunos) / 3.0;
     }

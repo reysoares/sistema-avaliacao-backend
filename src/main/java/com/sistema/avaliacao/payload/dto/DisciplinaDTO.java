@@ -1,5 +1,6 @@
 package com.sistema.avaliacao.payload.dto;
 
+import com.sistema.avaliacao.model.Curso;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ public class DisciplinaDTO {
 
     private String codigo;
     private String nome;
-    private String curso;
+    private CursoDTO curso;
     private String semestre;
     private String descricao;
     private int cargaHoraria;

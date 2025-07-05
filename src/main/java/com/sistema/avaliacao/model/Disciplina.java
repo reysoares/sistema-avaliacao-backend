@@ -17,7 +17,6 @@ public class Disciplina {
     private String codigo;
 
     private String nome;
-    private String curso;
     private String semestre;
     private String descricao;
     private int cargaHoraria;
@@ -26,4 +25,9 @@ public class Disciplina {
     @JoinColumn(name = "professor_disciplina")
     @JsonIgnore
     private Professor professor;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "curso_disciplina")
+    @JsonIgnore
+    private Curso curso;
 }

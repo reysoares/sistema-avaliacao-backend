@@ -1,6 +1,6 @@
 package com.sistema.avaliacao.payload.dto;
 
-import jakarta.persistence.Id;
+import com.sistema.avaliacao.model.Professor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,10 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CoordenadorDTO {
-
-    private String matriculaFuncionalCoordenador;
+public class CursoDTO {
+    private Long id;
     private String nome;
-    private String senha;
-
+    private ProfessorDTO coordenador;
 }
