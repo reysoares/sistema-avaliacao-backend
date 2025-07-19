@@ -1,9 +1,9 @@
 package com.sistema.avaliacao.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sistema.avaliacao.enums.SituacaoAluno;
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Getter
@@ -26,4 +26,9 @@ public class Aluno extends Usuario {
     @JoinColumn(name = "curso_aluno")
     @JsonIgnore
     private Curso curso;
+
+    @Override
+    public String getUsername() {
+        return matriculaAcademica;
+    }
 }

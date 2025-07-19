@@ -1,5 +1,7 @@
 package com.sistema.avaliacao.controller.professor;
 
+import com.sistema.avaliacao.payload.dto.AlunoDTO;
+import com.sistema.avaliacao.payload.dto.UsuarioLoginDTO;
 import com.sistema.avaliacao.payload.response.AvaliacaoProfessorResponse;
 import com.sistema.avaliacao.payload.response.DisciplinaResponse;
 import com.sistema.avaliacao.service.avaliacao.AvaliacaoProfessorService;
@@ -7,6 +9,8 @@ import com.sistema.avaliacao.service.disciplina.DisciplinaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,7 +60,7 @@ public class ProfessorController {
             @RequestParam (name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
             @RequestParam (name = "sortBy", defaultValue = AppConstants.SORT_ALUNOS_BY, required = false) String sortBy,
             @RequestParam (name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
-        ProfessorResponse professorResponse = professorService.searchAlunoByKeyword(keyword, pageNumber, pageSize, sortBy, sortOrder);
+        ProfessorResponse professorResponse = professorService.searchProfessorByKeyword(keyword, pageNumber, pageSize, sortBy, sortOrder);
         return new ResponseEntity<>(professorResponse, HttpStatus.FOUND);
     }
 
@@ -86,30 +90,31 @@ public class ProfessorController {
         return new ResponseEntity<>(avaliacaoProfessorResponse, HttpStatus.OK);
     }
 
-    @PostMapping("/public/professor")
-    public ResponseEntity <ProfessorDTO> createProfessor(@Valid @RequestBody ProfessorDTO professorDTO) {
-        ProfessorDTO savedProfessorDTO = professorService.createProfessor(professorDTO);
-        return new ResponseEntity<>(savedProfessorDTO, HttpStatus.CREATED);
+    @GetMapping("/public/professor/perfil/{id}")
+    public ResponseEntity<ProfessorDTO> getPerfilProfessor(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UsuarioLoginDTO usuarioLogado) {
+
+        boolean isPerfilProprio = usuarioLogado != null && usuarioLogado.getId().equals(id);
+        ProfessorDTO professorDTO = professorService.getProfessorDTO(id, isPerfilProprio);
+        return ResponseEntity.ok(professorDTO);
     }
 
+    @PreAuthorize("hasAuthority('PROFESSOR')")
     @PutMapping("/public/professor/{matriculaFuncional}")
     public ResponseEntity <ProfessorDTO> updateProfessor(@Valid @RequestBody ProfessorDTO professorDTO, @PathVariable String matriculaFuncional) {
-        ProfessorDTO updatedProfessorDTO = professorService.atualizarProfessorViaSuap(professorDTO, matriculaFuncional);
+        ProfessorDTO updatedProfessorDTO = professorService.atualizarProfessor(professorDTO, matriculaFuncional);
         return new ResponseEntity<>(updatedProfessorDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('PROFESSOR')")
     @PutMapping("/public/professor/{matriculaFuncional}/imagem")
     public ResponseEntity <ProfessorDTO> updateProfessorImagem(@PathVariable String matriculaFuncional, @RequestParam("imagem") MultipartFile imagem) throws IOException {
         ProfessorDTO updateProfessorDTO = professorService.updateProfessorImagem(matriculaFuncional, imagem);
         return new ResponseEntity<>(updateProfessorDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/public/professor/{matriculaFuncional}/descricao")
-    public ResponseEntity<ProfessorDTO> updateProfessorDescricao(@PathVariable String matriculaFuncional, @RequestBody ProfessorDTO professorDTO) {
-        ProfessorDTO updateProfessorDTO = professorService.updatePerfilDescricao(matriculaFuncional, professorDTO);
-        return new ResponseEntity<>(updateProfessorDTO, HttpStatus.OK);
-    }
-
+    @PreAuthorize("hasAuthority('PROFESSOR')")
     @DeleteMapping("/admin/professor/{matriculaFuncional}")
     public ResponseEntity <ProfessorDTO> deleteProfessor(@PathVariable String matriculaFuncional) {
         ProfessorDTO professorDeletedDTO = professorService.deleteProfessor(matriculaFuncional);

@@ -1,10 +1,10 @@
 package com.sistema.avaliacao.service.administrador;
 
-import com.sistema.avaliacao.exceptions.APIException;
 import com.sistema.avaliacao.exceptions.ResourceNotFoundException;
 import com.sistema.avaliacao.model.Administrador;
 import com.sistema.avaliacao.payload.dto.AdministradorDTO;
 import com.sistema.avaliacao.repositories.AdministradorRepository;
+import com.sistema.avaliacao.repositories.UsuarioRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,43 +16,39 @@ public class AdministradorServiceImplement implements AdministradorService {
     private AdministradorRepository administradorRepository;
 
     @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     @Override
-    public AdministradorDTO createAdministrador(AdministradorDTO administradorDTO) {
-        Administrador administrador = modelMapper.map(administradorDTO, Administrador.class);
+    public AdministradorDTO getAdministradorDTO(Long id, boolean isPerfilProprio) {
+        Administrador administrador = administradorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Administrador", "id", id));
 
-        boolean administradorJaExiste = administradorRepository.findAll().stream().findAny().isPresent();
+        AdministradorDTO administradorDTO = modelMapper.map(administrador, AdministradorDTO.class);
 
-        if (administradorJaExiste) {
-            throw new APIException("Já existe um administrador cadastrado no sistema.");
+        if (!isPerfilProprio) {
+            administradorDTO.setEmailInstitucional(null);
+            administradorDTO.setDataNascimento(null);
+            administradorDTO.setMatriculaAdministrativa(null);
         }
 
-        Administrador administradorSalvo = administradorRepository.save(administrador);
-        return modelMapper.map(administradorSalvo, AdministradorDTO.class);
+        return administradorDTO;
     }
 
     @Override
     public AdministradorDTO updateAdministrador(AdministradorDTO administradorDTO, String matriculaAdministrativa) {
-        Administrador administradorExistente = administradorRepository.findByMatriculaAdministrativa(matriculaAdministrativa)
-                .orElseThrow(() -> new ResourceNotFoundException("Administrador", "matriculaAdministrativa", matriculaAdministrativa));
-
-        administradorExistente.setNome(administradorDTO.getNome());
-        administradorExistente.setEmailInstitucional(administradorDTO.getEmailInstitucional());
-        administradorExistente.setPerfil(administradorDTO.getPerfil());
-        administradorExistente.setPerfilDescricao(administradorDTO.getPerfilDescricao());
-
-        Administrador administradorAtualizado = administradorRepository.save(administradorExistente);
-        return modelMapper.map(administradorAtualizado, AdministradorDTO.class);
-    }
-
-    @Override
-    public AdministradorDTO deleteAdministrador(String matriculaAdministrativa) {
         Administrador administrador = administradorRepository.findByMatriculaAdministrativa(matriculaAdministrativa)
                 .orElseThrow(() -> new ResourceNotFoundException("Administrador", "matriculaAdministrativa", matriculaAdministrativa));
 
-        AdministradorDTO administradorDTO = modelMapper.map(administrador, AdministradorDTO.class);
-        administradorRepository.delete(administrador);
-        return administradorDTO;
+        administrador.setNome(administradorDTO.getNome());
+        administrador.setDescricao(administradorDTO.getDescricao());
+        administrador.setDataNascimento(administradorDTO.getDataNascimento());
+        administrador.setEmailInstitucional(administradorDTO.getEmailInstitucional());
+
+        Administrador administradorAtualizado = administradorRepository.save(administrador);
+        return modelMapper.map(administradorAtualizado, AdministradorDTO.class);
     }
+
 }

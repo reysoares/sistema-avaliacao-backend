@@ -7,6 +7,7 @@ import com.sistema.avaliacao.service.curso.CursoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -38,18 +39,21 @@ public class CursoController {
         return new ResponseEntity<>(cursoResponse, HttpStatus.FOUND);
     }
 
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @PostMapping("/admin/curso")
     public ResponseEntity<CursoDTO> createCurso(@RequestBody CursoDTO cursoDTO) {
         CursoDTO created = cursoService.createCurso(cursoDTO);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @PutMapping("/admin/curso/{cursoId}/professor/{matriculaFuncional}")
     public ResponseEntity<CursoDTO> updateCurso(@PathVariable Long cursoId, @RequestBody CursoDTO cursoDTO, @PathVariable String matriculaFuncional) {
         CursoDTO updated = cursoService.updateCurso(cursoId, cursoDTO, matriculaFuncional);
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @DeleteMapping("/admin/curso/{cursoId}")
     public ResponseEntity<CursoDTO> deleteCurso(@PathVariable Long cursoId) {
         CursoDTO deleted = cursoService.deleteCurso(cursoId);

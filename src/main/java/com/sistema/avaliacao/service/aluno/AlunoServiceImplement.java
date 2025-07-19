@@ -1,13 +1,18 @@
 package com.sistema.avaliacao.service.aluno;
 
+import com.sistema.avaliacao.enums.Perfil;
 import com.sistema.avaliacao.exceptions.APIException;
 import com.sistema.avaliacao.exceptions.ResourceNotFoundException;
 import com.sistema.avaliacao.model.Aluno;
 import com.sistema.avaliacao.model.Curso;
-import com.sistema.avaliacao.payload.dto.AlunoDTO;
+import com.sistema.avaliacao.model.Funcao;
+import com.sistema.avaliacao.payload.dto.*;
+import com.sistema.avaliacao.payload.dto.UsuarioCadastroDTO;
 import com.sistema.avaliacao.payload.response.AlunoResponse;
 import com.sistema.avaliacao.repositories.AlunoRepository;
 import com.sistema.avaliacao.repositories.CursoRepository;
+import com.sistema.avaliacao.repositories.FuncaoRepository;
+import com.sistema.avaliacao.repositories.UsuarioRepository;
 import com.sistema.avaliacao.service.file.FileService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +36,15 @@ public class AlunoServiceImplement implements AlunoService {
 
     @Autowired
     private CursoRepository cursoRepository;
+
+    @Autowired
+    private FuncaoRepository funcaoRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -107,33 +122,55 @@ public class AlunoServiceImplement implements AlunoService {
     }
 
     @Override
-    public AlunoDTO createAluno(AlunoDTO alunoDTO) {
-        Aluno aluno = modelMapper.map(alunoDTO, Aluno.class);
-        Aluno alunoFromDB = alunoRepository.findByMatriculaAcademica(aluno.getMatriculaAcademica())
-                .orElse(null);
+    public AlunoDTO getAlunoDTO(Long id, boolean isPerfilProprio) {
+        Aluno aluno = alunoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Aluno", "id", id));
 
-        if (alunoFromDB != null)
-            throw new APIException("Aluno já cadastrado.");
+        AlunoDTO alunoDTO = modelMapper.map(aluno, AlunoDTO.class);
 
-        Long cursoId = alunoDTO.getCurso().getId();
+        if (!isPerfilProprio) {
+            alunoDTO.setEmailInstitucional(null);
+            alunoDTO.setDataNascimento(null);
+            alunoDTO.setMatriculaAcademica(null);
+            alunoDTO.setMatriz(null);
+            alunoDTO.setPeriodoReferencia(0);
+            alunoDTO.setSituacaoAluno(null);
+        }
 
-        Curso curso = cursoRepository.findById(cursoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Curso", "cursoId", cursoId));
+        return alunoDTO;
 
-        aluno.setCurso(curso);
-
-        Aluno savedAluno = alunoRepository.save(aluno);
-        return modelMapper.map(savedAluno, AlunoDTO.class);
     }
 
     @Override
-    public AlunoDTO atualizarAlunoViaSuap(AlunoDTO alunoDTO, String matriculaAcademica, Long cursoId) {
+    public AlunoDTO createAluno(UsuarioCadastroDTO usuarioDTO) {
+        if (alunoRepository.findByMatriculaAcademica(usuarioDTO.getMatricula()).isPresent()) {
+            throw new APIException("Aluno já cadastrado.");
+        }
+
+        Aluno aluno = new Aluno();
+        aluno.setNome(usuarioDTO.getNome());
+        aluno.setEmailInstitucional(usuarioDTO.getEmailInstitucional());
+        aluno.setDataNascimento(usuarioDTO.getDataNascimento());
+        aluno.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
+        aluno.setMatriculaAcademica(usuarioDTO.getMatricula());
+
+        Funcao funcaoAluno = funcaoRepository.findByPerfil(Perfil.ALUNO)
+                .orElseThrow(() -> new APIException("Função ALUNO não encontrada."));
+        aluno.setFuncao(funcaoAluno);
+
+        Aluno saved = alunoRepository.save(aluno);
+        return modelMapper.map(saved, AlunoDTO.class);
+    }
+
+    @Override
+    public AlunoDTO atualizarAluno(AlunoDTO alunoDTO, String matriculaAcademica, Long cursoId) {
         Aluno aluno = alunoRepository.findByMatriculaAcademica(matriculaAcademica)
                 .orElseThrow(() -> new ResourceNotFoundException("Aluno", "matriculaAcademica", matriculaAcademica));
 
         aluno.setNome(alunoDTO.getNome());
+        aluno.setDescricao(alunoDTO.getDescricao());
+        aluno.setDataNascimento(alunoDTO.getDataNascimento());
         aluno.setEmailInstitucional(alunoDTO.getEmailInstitucional());
-        aluno.setPerfil(alunoDTO.getPerfil());
         aluno.setMatriz(alunoDTO.getMatriz());
         aluno.setPeriodoReferencia(alunoDTO.getPeriodoReferencia());
         aluno.setSituacaoAluno(alunoDTO.getSituacaoAluno());
@@ -155,15 +192,6 @@ public class AlunoServiceImplement implements AlunoService {
         alunoFromDB.setImagem(fileName);
         Aluno updatedAluno = alunoRepository.save(alunoFromDB);
         return modelMapper.map(updatedAluno, AlunoDTO.class);
-    }
-
-    public AlunoDTO updatePerfilDescricao(String matriculaAcademica, AlunoDTO alunoDTO) {
-        Aluno aluno = alunoRepository.findByMatriculaAcademica(matriculaAcademica)
-                .orElseThrow(() -> new ResourceNotFoundException("Aluno", "matriculaAcademica", matriculaAcademica));
-
-        aluno.setPerfilDescricao(alunoDTO.getPerfilDescricao());
-        Aluno alunoAtualizado = alunoRepository.save(aluno);
-        return modelMapper.map(alunoAtualizado, AlunoDTO.class);
     }
 
     @Override

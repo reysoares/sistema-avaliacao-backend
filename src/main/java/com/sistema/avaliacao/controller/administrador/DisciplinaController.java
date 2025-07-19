@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -71,18 +72,21 @@ public class DisciplinaController {
         return new ResponseEntity<>(avaliacaoDisciplinaResponse, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @PostMapping("/admin/disciplina")
     public ResponseEntity<DisciplinaDTO> createDisciplina(@Valid @RequestBody DisciplinaDTO disciplinaDTO) {
         DisciplinaDTO savedDisciplinaDTO = disciplinaService.createDisciplina(disciplinaDTO);
         return new ResponseEntity<>(savedDisciplinaDTO, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @PutMapping("/admin/disciplina/{codigo}/curso/{cursoId}/professor/{matriculaFuncional}")
     public ResponseEntity<DisciplinaDTO> updateDisciplina(@Valid @RequestBody DisciplinaDTO disciplinaDTO, @PathVariable String codigo,  @PathVariable Long cursoId, @PathVariable String matriculaFuncional) {
         DisciplinaDTO updatedDisciplinaDTO = disciplinaService.updateDisciplina(disciplinaDTO, codigo, cursoId, matriculaFuncional);
         return new ResponseEntity<>(updatedDisciplinaDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @DeleteMapping("/admin/disciplina/{codigo}")
     public ResponseEntity<DisciplinaDTO> deleteDisciplina(@PathVariable String codigo) {
         DisciplinaDTO disciplinaDeletedDTO = disciplinaService.deleteDisciplina(codigo);

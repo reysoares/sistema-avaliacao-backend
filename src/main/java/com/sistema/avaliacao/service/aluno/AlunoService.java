@@ -1,6 +1,8 @@
 package com.sistema.avaliacao.service.aluno;
 
 import com.sistema.avaliacao.payload.dto.AlunoDTO;
+import com.sistema.avaliacao.payload.dto.UsuarioCadastroDTO;
+import com.sistema.avaliacao.payload.dto.UsuarioDTO;
 import com.sistema.avaliacao.payload.response.AlunoResponse;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,14 +16,14 @@ public interface AlunoService {
 
     AlunoResponse searchAlunoByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
 
-    AlunoDTO createAluno(AlunoDTO alunoDTO);
+    AlunoDTO getAlunoDTO(Long id, boolean isPerfilProprio);
 
-    AlunoDTO atualizarAlunoViaSuap(AlunoDTO alunoDTO, String matriculaAcademica, Long cursoId);
+    AlunoDTO createAluno(UsuarioCadastroDTO usuarioDTO);
 
-    AlunoDTO deleteAluno (String matriculaAcademica);
+    AlunoDTO atualizarAluno(AlunoDTO alunoDTO, String matriculaAcademica, Long cursoId);
 
     AlunoDTO updateAlunoImagem (String matriculaAcademica, MultipartFile imagem) throws IOException;
 
-    AlunoDTO updatePerfilDescricao(String matriculaAcademica, AlunoDTO alunoDTO);
+    AlunoDTO deleteAluno (String matriculaAcademica);
 
 }

@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,18 +32,21 @@ public class AvaliacaoDisciplinaController {
         return new ResponseEntity<>(avaliacaoDisciplinaResponse, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ALUNO')")
     @PostMapping("/public/aluno/avaliacao/disciplina")
     public ResponseEntity <AvaliacaoDisciplinaDTO> createAvaliacaoProfessor(@Valid @RequestBody AvaliacaoDisciplinaDTO avaliacaoDisciplinaDTO) {
         AvaliacaoDisciplinaDTO savedAvaliacaoDisciplinaDTO = avaliacaoDisciplinaService.createAvaliacaoDisciplina(avaliacaoDisciplinaDTO);
         return new ResponseEntity<>(savedAvaliacaoDisciplinaDTO, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('ALUNO')")
     @PutMapping("/public/aluno/avaliacao/disciplina/{matriculaAcademica}/{id}")
     public ResponseEntity <AvaliacaoDisciplinaDTO> updateAvaliacaoProfessor(@Valid @RequestBody AvaliacaoDisciplinaDTO avaliacaoDisciplinaDTO, @PathVariable String matriculaAcademica, @PathVariable Long id) {
         AvaliacaoDisciplinaDTO updateAvaliacaoDisciplinaDTO = avaliacaoDisciplinaService.updateAvaliacaoDisciplina(avaliacaoDisciplinaDTO,matriculaAcademica, id);
         return new ResponseEntity<>(updateAvaliacaoDisciplinaDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ALUNO')")
     @DeleteMapping("/admin/aluno/avaliacao/disciplina/{matriculaAcademica}/{id}")
     public ResponseEntity <AvaliacaoDisciplinaDTO> deleteAvaliacaoProfessor(@PathVariable String matriculaAcademica, @PathVariable Long id) {
         AvaliacaoDisciplinaDTO deletedAvaliacaoDisciplinaDTO = avaliacaoDisciplinaService.deleteAvaliacaoDisciplina(matriculaAcademica, id);

@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,30 +54,31 @@ public class AlunoController {
         return new ResponseEntity<>(alunoResponse, HttpStatus.FOUND);
     }
 
-    @PostMapping("/public/aluno")
-    public ResponseEntity <AlunoDTO> createAluno(@Valid @RequestBody AlunoDTO alunoDTO) {
-        AlunoDTO savedAlunoDTO = alunoService.createAluno(alunoDTO);
-        return new ResponseEntity<>(savedAlunoDTO, HttpStatus.CREATED);
+    @GetMapping("/public/aluno/perfil/{id}/{usuarioLogadoId}")
+    public ResponseEntity<AlunoDTO> getPerfilAluno(
+            @PathVariable Long id,
+            @PathVariable Long usuarioLogadoId) {
+
+        boolean isPerfilProprio = usuarioLogadoId != null && usuarioLogadoId.equals(id);
+        AlunoDTO alunoDTO = alunoService.getAlunoDTO(id, isPerfilProprio);
+        return ResponseEntity.ok(alunoDTO);
     }
 
+    @PreAuthorize("hasAuthority('ALUNO')")
     @PutMapping("/public/aluno/{matriculaAcademica}/curso/{cursoId}")
     public ResponseEntity <AlunoDTO> updateAluno(@Valid @RequestBody AlunoDTO alunoDTO, @PathVariable String matriculaAcademica, @PathVariable Long cursoId) {
-        AlunoDTO updateAlunoDTO = alunoService.atualizarAlunoViaSuap(alunoDTO, matriculaAcademica, cursoId);
+        AlunoDTO updateAlunoDTO = alunoService.atualizarAluno(alunoDTO, matriculaAcademica, cursoId);
         return new ResponseEntity<>(updateAlunoDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ALUNO')")
     @PutMapping("/public/aluno/{matriculaAcademica}/imagem")
     public ResponseEntity <AlunoDTO> updateAlunoImagem(@PathVariable String matriculaAcademica, @RequestParam("imagem") MultipartFile imagem) throws IOException {
         AlunoDTO updateAlunoDTO = alunoService.updateAlunoImagem(matriculaAcademica, imagem);
         return new ResponseEntity<>(updateAlunoDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/public/aluno/{matriculaAcademica}/descricao")
-    public ResponseEntity<AlunoDTO> updateAlunoDescricao(@PathVariable String matriculaAcademica, @RequestBody AlunoDTO alunoDTO) {
-        AlunoDTO updateAlunoDTO = alunoService.updatePerfilDescricao(matriculaAcademica, alunoDTO);
-        return new ResponseEntity<>(updateAlunoDTO, HttpStatus.OK);
-    }
-
+    @PreAuthorize("hasAuthority('ALUNO')")
     @DeleteMapping("/admin/aluno/{matriculaAcademica}")
     public ResponseEntity <AlunoDTO> deleteAluno(@PathVariable String matriculaAcademica) {
         AlunoDTO alunoDeletedDTO = alunoService.deleteAluno(matriculaAcademica);

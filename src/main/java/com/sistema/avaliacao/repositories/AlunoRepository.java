@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface AlunoRepository extends JpaRepository <Aluno, String> {
+public interface AlunoRepository extends JpaRepository <Aluno, Long> {
 
     Page<Aluno> findByNomeStartingWithIgnoreCase(String keyword, Pageable pageable);
 

@@ -4,10 +4,12 @@ import com.sistema.avaliacao.enums.Perfil;
 import com.sistema.avaliacao.exceptions.APIException;
 import com.sistema.avaliacao.exceptions.ResourceNotFoundException;
 import com.sistema.avaliacao.model.Curso;
+import com.sistema.avaliacao.model.Funcao;
 import com.sistema.avaliacao.model.Professor;
 import com.sistema.avaliacao.payload.dto.CursoDTO;
 import com.sistema.avaliacao.payload.response.CursoResponse;
 import com.sistema.avaliacao.repositories.CursoRepository;
+import com.sistema.avaliacao.repositories.FuncaoRepository;
 import com.sistema.avaliacao.repositories.ProfessorRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class CursoServiceImplement implements CursoService {
 
     @Autowired
     private CursoRepository cursoRepository;
+
+    @Autowired
+    private FuncaoRepository funcaoRepository;
 
     @Autowired
     private ProfessorRepository professorRepository;
@@ -96,7 +101,10 @@ public class CursoServiceImplement implements CursoService {
         Professor professor = professorRepository.findByMatriculaFuncional(matriculaFuncional)
                 .orElseThrow(() -> new ResourceNotFoundException("Professor", "matriculaFuncional", matriculaFuncional));
 
-        professor.setPerfil(Perfil.COORDENADOR);
+        Funcao funcaoProfessor = funcaoRepository.findByPerfil(Perfil.PROFESSOR)
+                .orElseThrow(() -> new APIException("Função PROFESSOR não encontrada."));
+        professor.setFuncao(funcaoProfessor);
+
         curso.setCoordenador(professor);
 
         professorRepository.save(professor);

@@ -3,7 +3,12 @@ package com.sistema.avaliacao.service.professor;
 import java.io.IOException;
 import java.util.List;
 
-import com.sistema.avaliacao.repositories.CursoRepository;
+import com.sistema.avaliacao.enums.Perfil;
+import com.sistema.avaliacao.model.Funcao;
+import com.sistema.avaliacao.payload.dto.UsuarioCadastroDTO;
+import com.sistema.avaliacao.payload.dto.UsuarioDTO;
+import com.sistema.avaliacao.repositories.FuncaoRepository;
+import com.sistema.avaliacao.repositories.UsuarioRepository;
 import com.sistema.avaliacao.service.file.FileService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +24,7 @@ import com.sistema.avaliacao.model.Professor;
 import com.sistema.avaliacao.payload.dto.ProfessorDTO;
 import com.sistema.avaliacao.payload.response.ProfessorResponse;
 import com.sistema.avaliacao.repositories.ProfessorRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +35,13 @@ public class ProfessorServiceImpl  implements ProfessorService{
     ProfessorRepository professorRepository;
 
     @Autowired
-    CursoRepository cursoRepository;
+    UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private FuncaoRepository funcaoRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     ModelMapper modelMapper;
@@ -71,7 +83,7 @@ public class ProfessorServiceImpl  implements ProfessorService{
     }
 
     @Override
-    public ProfessorResponse searchAlunoByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+    public ProfessorResponse searchProfessorByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         Sort sort = Sort.by("nome").ascending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
@@ -87,26 +99,51 @@ public class ProfessorServiceImpl  implements ProfessorService{
     }
 
     @Override
-    public ProfessorDTO createProfessor(ProfessorDTO professorDTO) {
-        Professor professor = modelMapper.map(professorDTO, Professor.class);
-        Professor professorFromDB = professorRepository.findByMatriculaFuncional(professor.getMatriculaFuncional())
-                .orElse(null);
+    public ProfessorDTO getProfessorDTO(Long id, boolean isPerfilProprio) {
+        Professor professor = professorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor", "id", id));
 
-        if (professorFromDB != null)
-            throw new APIException("Professor já cadastrado.");
+        ProfessorDTO professorDTO = modelMapper.map(professor, ProfessorDTO.class);
 
-        Professor savedProfessor = professorRepository.save(professor);
-        return modelMapper.map(savedProfessor, ProfessorDTO.class);
+        if (!isPerfilProprio) {
+            professorDTO.setEmailInstitucional(null);
+            professorDTO.setDataNascimento(null);
+            professorDTO.setMatriculaFuncional(null);
+        }
+
+        return professorDTO;
     }
 
     @Override
-    public ProfessorDTO atualizarProfessorViaSuap(ProfessorDTO professorDTO, String matriculaFuncional) {
+    public ProfessorDTO createProfessor(UsuarioCadastroDTO usuarioDTO) {
+        if (professorRepository.findByMatriculaFuncional(usuarioDTO.getMatricula()).isPresent()) {
+            throw new APIException("Professor já cadastrado.");
+        }
+
+        Professor professor = new Professor();
+        professor.setNome(usuarioDTO.getNome());
+        professor.setEmailInstitucional(usuarioDTO.getEmailInstitucional());
+        professor.setDataNascimento(usuarioDTO.getDataNascimento());
+        professor.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
+        professor.setMatriculaFuncional(usuarioDTO.getMatricula());
+
+        Funcao funcaoProfessor = funcaoRepository.findByPerfil(Perfil.PROFESSOR)
+                .orElseThrow(() -> new APIException("Função PROFESSOR não encontrada."));
+        professor.setFuncao(funcaoProfessor);
+
+        Professor saved = professorRepository.save(professor);
+        return modelMapper.map(saved, ProfessorDTO.class);
+    }
+
+    @Override
+    public ProfessorDTO atualizarProfessor(ProfessorDTO professorDTO, String matriculaFuncional) {
         Professor professor = professorRepository.findByMatriculaFuncional(matriculaFuncional)
                 .orElseThrow(() -> new ResourceNotFoundException("Professor", "matriculaFuncional", matriculaFuncional));
 
         professor.setNome(professorDTO.getNome());
+        professor.setDescricao(professorDTO.getDescricao());
+        professor.setDataNascimento(professorDTO.getDataNascimento());
         professor.setEmailInstitucional(professorDTO.getEmailInstitucional());
-        professor.setPerfil(professorDTO.getPerfil());
         professor.setDepartamento(professorDTO.getDepartamento());
         professor.setUnidadeEnsino(professorDTO.getUnidadeEnsino());
         professor.setAreaAtuacao(professorDTO.getAreaAtuacao());
@@ -124,16 +161,6 @@ public class ProfessorServiceImpl  implements ProfessorService{
         professorFromDB.setImagem(fileName);
         Professor updatedProfessor = professorRepository.save(professorFromDB);
         return modelMapper.map(updatedProfessor, ProfessorDTO.class);
-    }
-
-    @Override
-    public ProfessorDTO updatePerfilDescricao(String matriculaFuncional, ProfessorDTO professorDTO) {
-        Professor professor = professorRepository.findByMatriculaFuncional(matriculaFuncional)
-                .orElseThrow(() -> new ResourceNotFoundException("Professor", "matriculaFuncional", matriculaFuncional));
-
-        professor.setPerfilDescricao(professorDTO.getPerfilDescricao());
-        Professor professorAtualizado = professorRepository.save(professor);
-        return modelMapper.map(professorAtualizado, ProfessorDTO.class);
     }
 
     @Override

@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import lombok.*;
 
-
 @Entity
 @Getter
 @Setter
@@ -21,4 +20,8 @@ public class Professor extends Usuario {
     private String unidadeEnsino;
     private String areaAtuacao;
 
+    @Override
+    public String getUsername() {
+        return matriculaFuncional;
+    }
 }
