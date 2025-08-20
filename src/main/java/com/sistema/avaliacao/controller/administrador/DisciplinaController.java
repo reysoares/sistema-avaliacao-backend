@@ -1,6 +1,7 @@
 package com.sistema.avaliacao.controller.administrador;
 
 import com.sistema.avaliacao.config.AppConstants;
+import com.sistema.avaliacao.payload.dto.DisciplinaCreateDTO;
 import com.sistema.avaliacao.payload.dto.DisciplinaDTO;
 import com.sistema.avaliacao.payload.response.AvaliacaoDisciplinaResponse;
 import com.sistema.avaliacao.payload.response.DisciplinaResponse;
@@ -72,10 +73,12 @@ public class DisciplinaController {
         return new ResponseEntity<>(avaliacaoDisciplinaResponse, HttpStatus.OK);
     }
 
+    // Método createDisciplina em DisciplinaController.java
+
     @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @PostMapping("/admin/disciplina")
-    public ResponseEntity<DisciplinaDTO> createDisciplina(@Valid @RequestBody DisciplinaDTO disciplinaDTO) {
-        DisciplinaDTO savedDisciplinaDTO = disciplinaService.createDisciplina(disciplinaDTO);
+    public ResponseEntity<DisciplinaDTO> createDisciplina(@Valid @RequestBody DisciplinaCreateDTO disciplinaCreateDTO) {
+        DisciplinaDTO savedDisciplinaDTO = disciplinaService.createDisciplina(disciplinaCreateDTO);
         return new ResponseEntity<>(savedDisciplinaDTO, HttpStatus.CREATED);
     }
 

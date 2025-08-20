@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/login", "/signin", "/signup", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/public/usuario/**").permitAll()
+                        .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // libera todas OPTIONS
                         .anyRequest().authenticated()
                 )
