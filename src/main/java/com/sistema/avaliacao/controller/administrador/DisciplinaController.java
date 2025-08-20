@@ -60,11 +60,11 @@ public class DisciplinaController {
 
     @GetMapping("/public/avaliacoes/disciplina/{codigo}")
     public ResponseEntity<AvaliacaoDisciplinaResponse> getAvaliacoesDisciplina(
-            @PathVariable String codigo,
-            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
-            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
-            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_DISCIPLINAS_BY, required = false) String sortBy,
-            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
+        @PathVariable String codigo,
+        @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+        @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+        @RequestParam(name = "sortBy", defaultValue = "id", required = false) String sortBy, // <-- CORRIGIDO AQUI
+        @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder) {
 
 
         DisciplinaDTO disciplinaDTO = new DisciplinaDTO();
