@@ -1,7 +1,6 @@
 package com.sistema.avaliacao.controller.administrador;
 
 import com.sistema.avaliacao.payload.dto.AdministradorDTO;
-import com.sistema.avaliacao.payload.dto.ProfessorDTO;
 import com.sistema.avaliacao.payload.dto.UsuarioLoginDTO;
 import com.sistema.avaliacao.service.administrador.AdministradorService;
 import jakarta.validation.Valid;

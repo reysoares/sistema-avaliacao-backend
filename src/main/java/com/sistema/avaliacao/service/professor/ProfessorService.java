@@ -2,7 +2,6 @@ package com.sistema.avaliacao.service.professor;
 
 import com.sistema.avaliacao.payload.dto.ProfessorDTO;
 import com.sistema.avaliacao.payload.dto.UsuarioCadastroDTO;
-import com.sistema.avaliacao.payload.dto.UsuarioDTO;
 import com.sistema.avaliacao.payload.response.ProfessorResponse;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -4,7 +4,6 @@ import com.sistema.avaliacao.exceptions.ResourceNotFoundException;
 import com.sistema.avaliacao.model.Administrador;
 import com.sistema.avaliacao.payload.dto.AdministradorDTO;
 import com.sistema.avaliacao.repositories.AdministradorRepository;
-import com.sistema.avaliacao.repositories.UsuarioRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,9 +13,6 @@ public class AdministradorServiceImplement implements AdministradorService {
 
     @Autowired
     private AdministradorRepository administradorRepository;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private ModelMapper modelMapper;

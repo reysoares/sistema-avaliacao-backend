@@ -6,7 +6,6 @@ import java.util.List;
 import com.sistema.avaliacao.enums.Perfil;
 import com.sistema.avaliacao.model.Funcao;
 import com.sistema.avaliacao.payload.dto.UsuarioCadastroDTO;
-import com.sistema.avaliacao.payload.dto.UsuarioDTO;
 import com.sistema.avaliacao.repositories.FuncaoRepository;
 import com.sistema.avaliacao.repositories.UsuarioRepository;
 import com.sistema.avaliacao.service.file.FileService;

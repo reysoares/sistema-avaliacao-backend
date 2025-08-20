@@ -12,7 +12,6 @@ import com.sistema.avaliacao.payload.response.AlunoResponse;
 import com.sistema.avaliacao.repositories.AlunoRepository;
 import com.sistema.avaliacao.repositories.CursoRepository;
 import com.sistema.avaliacao.repositories.FuncaoRepository;
-import com.sistema.avaliacao.repositories.UsuarioRepository;
 import com.sistema.avaliacao.service.file.FileService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +38,6 @@ public class AlunoServiceImplement implements AlunoService {
 
     @Autowired
     private FuncaoRepository funcaoRepository;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;

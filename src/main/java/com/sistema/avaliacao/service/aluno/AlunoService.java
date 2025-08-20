@@ -2,7 +2,6 @@ package com.sistema.avaliacao.service.aluno;
 
 import com.sistema.avaliacao.payload.dto.AlunoDTO;
 import com.sistema.avaliacao.payload.dto.UsuarioCadastroDTO;
-import com.sistema.avaliacao.payload.dto.UsuarioDTO;
 import com.sistema.avaliacao.payload.response.AlunoResponse;
 import org.springframework.web.multipart.MultipartFile;
 

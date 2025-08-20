@@ -7,7 +7,6 @@ import com.sistema.avaliacao.model.Usuario;
 import com.sistema.avaliacao.payload.dto.*;
 import com.sistema.avaliacao.payload.dto.UsuarioCadastroDTO;
 import com.sistema.avaliacao.payload.dto.UsuarioLoginDTO;
-import com.sistema.avaliacao.service.administrador.AdministradorService;
 import com.sistema.avaliacao.service.aluno.AlunoService;
 import com.sistema.avaliacao.service.professor.ProfessorService;
 import com.sistema.avaliacao.service.usuario.UsuarioService;
@@ -43,9 +42,6 @@ public class UsuarioController {
 
     @Autowired
     private ProfessorService professorService;
-
-    @Autowired
-    private AdministradorService administradorService;
 
     @GetMapping("/{id}/perfil")
     public ResponseEntity<String> getPerfilUsuario(@PathVariable Long id) {
